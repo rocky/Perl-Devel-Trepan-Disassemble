@@ -1,0 +1,40 @@
+{
+   "abstract" : "Adds disassemble support via B::Concise to Devel::Trepan",
+   "author" : [
+      "Rocky Bernstein <rocky@cpan.org>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112621",
+   "license" : [
+      "open_source"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Devel-Trepan-Disassemble",
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0.32"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "B::Concise" : 0,
+            "Devel::Trepan" : "v0.1.5",
+            "Getopt::Long" : 0,
+            "Test::More" : 0,
+            "perl" : "5.008",
+            "rlib" : "0.02"
+         }
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "license" : [
+         "http://opensource.org/licenses/gpl-license.php"
+      ]
+   },
+   "version" : "1"
+}
