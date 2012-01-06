@@ -21,13 +21,13 @@ use ExtUtils::PkgConfig;
 use Config;
 
 my $builder = Module::Build->new( 
-    module_name         => 'Devel::Trepan::Shell',
+    module_name         => 'Devel::Trepan::Disassemble',
     add_to_cleanup      => [ 'Devel-Trepan-*', 'tmp*', '*.got'  ],
     create_makefile_pl  => 'passthrough',
     dist_abstract       => 
     'Adds disassemble support via B::Concise to Devel::Trepan',
     dist_author         => 'Rocky Bernstein <rocky@cpan.org>',
-    dist_version_from   => 'lib/Devel/Trepan/Shell.pm',
+    dist_version_from   => 'lib/Devel/Trepan/Disassemble.pm',
     license             => 'gpl',
     needs_compiler      => 0,
     release_status      => 'stable',

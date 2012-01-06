@@ -1,7 +1,12 @@
-Build.PL                        Proto Build creator
+Artistic
+Build.PL			Proto Build creator
+Changes
+GNUmakefile
+gpl-3.0.txt
 lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm
 lib/Devel/Trepan/Disassemble.pm
+Makefile.PL
 MANIFEST			This list of files
 README				README in perlpod format for CPAN
-README.md                       README in Markdown format for github
-t/10test-cmd-complete.t         Note: 10 tests are unit tests
+README.md			README in Markdown format for github
+t/10test-cmd-complete.t		Note: 10 tests are unit tests

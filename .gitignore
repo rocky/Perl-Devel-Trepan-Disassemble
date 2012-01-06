@@ -1,1 +1,10 @@
-/README.md~
+*~
+/Build
+/MANIFEST.SKIP
+/MANIFEST.SKIP.bak
+/MANIFEST.bak
+/Makefile.PL
+/Perl-Devel-Trepan-Disassemble*.tar.gz*
+/_build
+/blib
+/tmp

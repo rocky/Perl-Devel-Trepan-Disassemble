@@ -15,11 +15,12 @@ use if !defined @ISA, Devel::Trepan::CmdProcessor::Command ;
 
 unless (defined @ISA) {
     eval <<"EOE";
-use constant CATEGORY   => 'data';
-use constant SHORT_HELP => 'Disassemble subroutine(s)';
-use constant MIN_ARGS  => 0;  # Need at least this many
-use constant MAX_ARGS  => undef;  # Need at most this many - undef -> unlimited.
-use constant NEED_STACK => 0;
+    use constant ALIASES    => qw(disasm);
+    use constant CATEGORY   => 'data';
+    use constant SHORT_HELP => 'Disassemble subroutine(s)';
+    use constant MIN_ARGS  => 0;  # Need at least this many
+    use constant MAX_ARGS  => undef;  # Need at most this many - undef -> unlimited.
+    use constant NEED_STACK => 0;
 EOE
 }
 
@@ -30,7 +31,7 @@ use vars @CMD_VARS;  # Value inherited from parent
 
 our $NAME = set_name();
 our $HELP = <<"HELP";
-${NAME} [options] [SUBROUTINE ...]
+${NAME} [options] [SUBROUTINE|PACKAGE-NAME ...]
 
 options: 
     -concise
@@ -44,8 +45,9 @@ options:
     -vt
     -ascii
 
-Use B::Concise to disassemble a subroutine. SUBROUTINE is not specified,
-use the subroutine where the program is currently stopped.
+Use B::Concise to disassemble a list of subroutines or a packages.  If
+no subroutine or package is specified, use the subroutine where the
+program is currently stopped.
 HELP
 
 use constant DEFAULT_OPTIONS => {
@@ -89,6 +91,19 @@ sub parse_options($$)
     $opts;
 }
 
+sub do_one($$$$)
+{
+    my ($proc, $title, $options, $args) = @_;
+    no strict 'refs';
+    $proc->section($title);
+    my $walker = B::Concise::compile($options->{order}, '-src', @{$args});
+    B::Concise::set_style_standard($options->{line_style});
+    B::Concise::walk_output(\my $buf);
+    $walker->();			# walks and renders into $buf;
+    ## FIXME: syntax highlight the output.
+    $proc->msg($buf);
+}
+
 sub run($$)
 {
     my ($self, $args) = @_;
@@ -100,21 +115,19 @@ sub run($$)
 	if ($proc->funcname && $proc->funcname ne 'DB::DB') {
 	    push @args, $proc->funcname;
 	} else {
-	    $proc->msg("No function currently recorded");
+	    do_one($proc, "Package Main", $options, ['-main']);
 	}
     }
 
-    for my $method_name (@args) {
-	if ($proc->is_method($method_name)) {
-	    $proc->section("Subroutine $method_name");
-	    my $walker = B::Concise::compile($options->{order}, $method_name);
-	    B::Concise::set_style_standard($options->{line_style});
-	    B::Concise::walk_output(\my $buf);
-	    $walker->();			# walks and renders into $buf;
-	    ## FIXME: syntax highlight the output.
-	    $proc->msg($buf);
+    for my $disasm_unit (@args) {
+	no strict 'refs';
+	if (%{$disasm_unit.'::'}) {
+	    do_one($proc, "Package $disasm_unit", $options, 
+		   ["-stash=$disasm_unit"]);
+	} elsif ($proc->is_method($disasm_unit)) {
+	    do_one($proc, "Subroutine $disasm_unit", $options, [$disasm_unit]);
 	} else {
-	    $proc->errmsg("Can't find subroutine $method_name");
+	    $proc->errmsg("Don't know $disasm_unit as a package or function");
 	}
     }
 }
