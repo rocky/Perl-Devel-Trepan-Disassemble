@@ -22,7 +22,7 @@
       "runtime" : {
          "requires" : {
             "B::Concise" : 0,
-            "Devel::Trepan" : "v0.1.5",
+            "Devel::Trepan" : "0.001008",
             "Getopt::Long" : 0,
             "Test::More" : 0,
             "perl" : "5.008",

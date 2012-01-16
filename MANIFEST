@@ -15,3 +15,5 @@ t/10test-cmd-complete.t		Note: 10 tests are unit tests
 t/Helper.pm
 t/data/disassemble.cmd
 t/data/disassemble.right
+META.yml
+META.json
