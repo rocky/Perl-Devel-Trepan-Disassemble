@@ -4,7 +4,7 @@
       "Rocky Bernstein <rocky@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112621",
+   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112150",
    "license" : [
       "open_source"
    ],
@@ -28,6 +28,16 @@
             "perl" : "5.008",
             "rlib" : "0.02"
          }
+      }
+   },
+   "provides" : {
+      "Devel::Trepan::CmdProcessor::Command::Disassemble" : {
+         "file" : "lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm",
+         "version" : 0
+      },
+      "Devel::Trepan::Disassemble" : {
+         "file" : "lib/Devel/Trepan/Disassemble.pm",
+         "version" : "1"
       }
    },
    "release_status" : "stable",

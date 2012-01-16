@@ -1,0 +1,14 @@
+2012-01-06  Rocky Bernstein <rocky@cpan.org>
+
+	* .gitignore, Build.PL, MANIFEST,
+	lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm,
+	lib/Devel/Trepan/Disassemble.pm, t/10test-cmd-complete.t,
+	t/data/.gitignore: Allow disassembly of main or packages. Fix
+	completion using cmddir option. This broke when Disassembly was
+	split off.
+
+2012-01-01  Rocky Bernstein <rocky@cpan.org>
+
+	* Moved "disassemble" command of Devel::Trepan to here, a separate
+	package.
+
