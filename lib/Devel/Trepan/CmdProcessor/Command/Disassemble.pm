@@ -11,9 +11,9 @@ package Devel::Trepan::CmdProcessor::Command::Disassemble;
 use Getopt::Long qw(GetOptionsFromArray);
 use B::Concise qw(set_style);
 
-use if !defined @ISA, Devel::Trepan::CmdProcessor::Command ;
+use if !@ISA, Devel::Trepan::CmdProcessor::Command ;
 
-unless (defined @ISA) {
+unless (@ISA) {
     eval <<"EOE";
     use constant ALIASES    => qw(disasm);
     use constant CATEGORY   => 'data';
@@ -21,13 +21,22 @@ unless (defined @ISA) {
     use constant MIN_ARGS  => 0;  # Need at least this many
     use constant MAX_ARGS  => undef;  # Need at most this many - undef -> unlimited.
     use constant NEED_STACK => 0;
+
 EOE
 }
 
 use strict;
 
-use vars qw(@ISA); @ISA = qw(Devel::Trepan::CmdProcessor::Command);
+use vars qw(@ISA $DEFAULT_OPTIONS); 
+@ISA = qw(Devel::Trepan::CmdProcessor::Command); 
+
 use vars @CMD_VARS;  # Value inherited from parent
+
+$DEFAULT_OPTIONS = {
+    line_style => 'debug',
+    order      => '-basic',
+    tree_style => '-ascii',
+};
 
 our $NAME = set_name();
 our $HELP = <<"HELP";
@@ -50,12 +59,6 @@ no subroutine or package is specified, use the subroutine where the
 program is currently stopped.
 HELP
 
-use constant DEFAULT_OPTIONS => {
-    line_style => 'debug',
-    order      => '-basic',
-    tree_style => '-ascii',
-};
-
 sub complete($$) 
 {
     no warnings 'once';
@@ -69,7 +72,7 @@ sub complete($$)
 sub parse_options($$)
 {
     my ($self, $args) = @_;
-    my $opts = DEFAULT_OPTIONS;
+    my $opts = $DEFAULT_OPTIONS;
     my $result = &GetOptionsFromArray($args,
           '-concise'    => sub { $opts->{line_style} = 'concise'},
           '-terse'      => sub { $opts->{line_style} = 'terse'},

@@ -3,6 +3,7 @@
 /MANIFEST.SKIP
 /MANIFEST.SKIP.bak
 /MANIFEST.bak
+/Makefile
 /Makefile.PL
 /Perl-Devel-Trepan-Disassemble*.tar.gz*
 /_build
