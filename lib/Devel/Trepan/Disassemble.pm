@@ -17,7 +17,7 @@ This adds a "disassemble" command to the L<Devel::Trepan> debugger.
 This plugin uses B::Concise to disassemble a list of subroutines or a
 packages.  
 
-See "help" inside the debugger or a list of options.
+See "help" inside the debugger for a list of options.
 
 =head1 AUTHORS
 
