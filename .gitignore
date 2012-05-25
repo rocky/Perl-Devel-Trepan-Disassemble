@@ -1,10 +1,14 @@
 *~
 /Build
+/Devel-Trepan-Disassemble*.tar.gz
 /MANIFEST.SKIP
 /MANIFEST.SKIP.bak
 /MANIFEST.bak
+/META.json
+/META.yml
+/Makefile
 /Makefile.PL
-/Perl-Devel-Trepan-Disassemble*.tar.gz*
 /_build
 /blib
+/how-to-make-a-release.txt
 /tmp

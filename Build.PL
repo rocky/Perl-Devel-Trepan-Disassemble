@@ -17,7 +17,6 @@
 use strict;
 use warnings;
 use Module::Build;
-use ExtUtils::PkgConfig;
 use Config;
 
 my $builder = Module::Build->new( 
@@ -39,7 +38,7 @@ my $builder = Module::Build->new(
 	'B::Concise'                        => 0,
 	'Devel::Trepan'                     => '0.001008',
 	'Getopt::Long'                      => 0,
-        'Test::More'                        => 0,
+        'Test::More'                        => '0.81',
         'rlib'                              => '0.02',
     },
     sign                => ($ENV{PERL_MB_NOSIGN} ? 0 : 1),

@@ -1,4 +1,9 @@
 Revision history for Devel-Trepan-Disassemble
 
+1.1  May 25, 2012
+- Remove spurious dependency causing a CPANTS failure.
+- Add more documentation and tests.
+
+
 1.0  Jan 16, 2012
 - Initial release. Add debugger command "disassemble" and alias "disasm".

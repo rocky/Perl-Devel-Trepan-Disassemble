@@ -11,6 +11,8 @@ example/five.pm
 gpl-3.0.txt
 lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm
 lib/Devel/Trepan/Disassemble.pm
+t/00load.t
+t/00test-pod.t
 t/10test-cmd-complete.t		Note: 10 tests are unit tests
 t/Helper.pm
 t/data/disassemble.cmd
