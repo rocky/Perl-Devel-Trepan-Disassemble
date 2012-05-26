@@ -1,3 +1,38 @@
+2012-05-26  Rocky Bernstein <rocky@cpan.org>
+
+	* Changes, MANIFEST, META.json, META.yml, example/five.pm,
+	lib/Devel/Trepan/Disassemble.pm, t/20test-disassemble.t,
+	t/20test-disassemble.try, t/data/disassemble.right: Get ready for
+	release 1.2
+
+2012-05-25  rocky <rocky@cpan.org>
+
+	* META.json, META.yml, lib/Devel/Trepan/Disassemble.pm: Typo
+
+2012-05-25  rocky <rocky@cpan.org>
+
+	* : commit a43c3b7e62b947fc3f9ca6921cdc043e8cbbcea0 Author: rocky
+	<rocky@cpan.org> Date:   Fri May 25 16:57:05 2012 -0400
+
+2012-05-22  Rocky Bernstein <rocky@cpan.org>
+
+	* .gitignore, MYMETA.json, MYMETA.yml,
+	lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm,
+	lib/Devel/Trepan/Disassemble.pm: Remove Perl5.16 defined(@array)
+	deprecation. Bump version, and avoid DEFAULT_OPTIONS getting defined
+	twice.
+
+2012-01-16  rocky <rocky@cpan.org>
+
+	* Build.PL, MANIFEST, MYMETA.json, MYMETA.yml,
+	lib/Devel/Trepan/Disassemble.pm: Administrivia: version number
+	futzing.
+
+2012-01-16  rocky <rocky@cpan.org>
+
+	* ChangeLog, Changes, MANIFEST, MYMETA.json, MYMETA.yml: Get ready
+	for release 1.0
+
 2012-01-06  Rocky Bernstein <rocky@cpan.org>
 
 	* .gitignore, Build.PL, MANIFEST,
