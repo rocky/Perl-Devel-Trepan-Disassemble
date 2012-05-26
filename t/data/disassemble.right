@@ -6,32 +6,31 @@ UNOP (0x1234567)
 	op_next		0
 	op_sibling	0
 	op_ppaddr	PL_ppaddr[OP_LEAVESUB]
-	op_type		174
+	op_type		1955
 	op_flags	4
-	op_private	65	
+	op_private 1027
 	op_first	0x7654321
 LISTOP (0x1234567)
 	op_next		0x7654321
 	op_sibling	0
 	op_ppaddr	PL_ppaddr[OP_LINESEQ]
-	op_type		180
+	op_type		1955
 	op_flags	12
-	op_private	0	
+	op_private 1027
 	op_first	0x7654321
 	op_last		0x7654321
-# 2:     5;
 COP (0x1234567)
 	op_next		0x7654321
 	op_sibling	0x7654321
 	op_ppaddr	PL_ppaddr[OP_DBSTATE]
-	op_type		182
+	op_type		1955
 	op_flags	1
-	op_private	0	0
+	op_private 1027
 SVOP (0x1234567)
 	op_next		0x7654321
 	op_sibling	0
 	op_ppaddr	PL_ppaddr[OP_CONST]
-	op_type		5
+	op_type		1955
 	op_flags	2
-	op_private	0	
+	op_private 1027
 	op_sv		0x7654321
