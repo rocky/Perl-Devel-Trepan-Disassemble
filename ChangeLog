@@ -1,3 +1,25 @@
+2012-05-27  rocky <rocky@cpan.org>
+
+	* .gitignore, Build.PL, t/20test-disassemble.t, t/Helper.pm: Redo
+	test so we don't use trepan.pl but instead use only the
+	Devel::Trepan module. We don't know what file we will find with
+	trepan.pl. But we can make sure we get the right stuff uing
+	Devel::Trepan and the right Perl.
+
+2012-05-26  rocky <rocky@cpan.org>
+
+	* META.json, META.yml: Adminstrivia
+
+2012-05-26  rocky <rocky@cpan.org>
+
+	* lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm,
+	t/20test-disassemble.t, t/data/disassemble.right: Deal with opcode
+	variations we might get on different systems
+
+2012-05-26  Rocky Bernstein <rocky@cpan.org>
+
+	* ChangeLog: Update ChangeLog
+
 2012-05-26  Rocky Bernstein <rocky@cpan.org>
 
 	* Changes, MANIFEST, META.json, META.yml, example/five.pm,
@@ -11,8 +33,17 @@
 
 2012-05-25  rocky <rocky@cpan.org>
 
-	* : commit a43c3b7e62b947fc3f9ca6921cdc043e8cbbcea0 Author: rocky
-	<rocky@cpan.org> Date:   Fri May 25 16:57:05 2012 -0400
+	Merge branch 'master' of
+	github.com:rocky/Perl-Devel-Trepan-Disassemble  Conflicts:
+	.gitignore 	META.json 	META.yml 	lib/Devel/Trepan/Disassemble.pm
+
+2012-05-25  rocky <rocky@cpan.org>
+
+	* .gitignore, Build.PL, Changes, MANIFEST, META.json, META.yml,
+	MYMETA.json, MYMETA.yml, README, lib/Devel/Trepan/Disassemble.pm,
+	t/00load.t, t/00test-pod.t: Build.PL: Remove spurios 'use' causing a
+	CPANTS failure Add more tests and more doucmentation. Some
+	Administrivia too.
 
 2012-05-22  Rocky Bernstein <rocky@cpan.org>
 
