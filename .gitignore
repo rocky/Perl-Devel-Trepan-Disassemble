@@ -4,6 +4,8 @@
 /MANIFEST.SKIP
 /MANIFEST.SKIP.bak
 /MANIFEST.bak
+/MYMETA.json
+/MYMETA.yml
 /Makefile
 /Makefile.PL
 /_build

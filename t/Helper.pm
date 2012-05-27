@@ -2,7 +2,7 @@ use warnings; use strict;
 require Test::More;
 use File::Spec;
 use File::Basename;
-my $trepanpl ='trepan.pl';
+use Data::Dumper;
 my $debug = $^W;
 
 package Helper;
@@ -12,13 +12,9 @@ use English qw( -no_match_vars ) ;
 
 # Runs debugger in subshell. 0 is returned if everything went okay.
 # nonzero if something went wrong.
-sub run_debugger($$;$$)
+sub run_debugger($$$;$$)
 {
-    my ($test_invoke, $cmd_filename, $right_filename, $opts) = @_;
-    $opts = {} unless defined $opts;
-    $opts->{do_test} = 1 unless exists $opts->{do_test};
-    Test::More::note( "running $test_invoke with $cmd_filename" );
-    my $run_opts = $opts->{run_opts} || "--basename --nx --no-highlight";
+    my ($test_invoke, $cmddir, $cmd_filename, $right_filename, $opts) = @_;
     my $full_cmd_filename = File::Spec->catfile(dirname(__FILE__), 
 						'data', $cmd_filename);
 
@@ -29,10 +25,22 @@ sub run_debugger($$;$$)
         return $new_fn;
     };
 
-    $run_opts .= " --testing $full_cmd_filename" unless ($opts->{no_cmdfile});
+    my $run_opts = {
+	basename  => 1,
+	nx        => 1,
+	highlight => 0,
+	testing   => $full_cmd_filename,
+	cmddir    => [$cmddir],
+    };
+
     $right_filename = $ext_file->('right') unless defined($right_filename);
-    my $cmd = "$trepanpl $run_opts $test_invoke";
-    print $cmd, "\n"  if $debug;
+    $ENV{'TREPANPL_OPTS'} = Data::Dumper::Dumper($run_opts);
+    my $cmd = "$EXECUTABLE_NAME -d:Trepan $test_invoke";
+    Test::More::note( "running $cmd" );
+    if ($debug) {
+	print Data::Dumper::Dumper($run_opts), "\n"; 
+	print $cmd, "\n"  if $debug;
+    }
     my $output = `$cmd`;
     print "$output\n" if $debug;
     my $rc = $? >> 8;
@@ -43,7 +51,8 @@ sub run_debugger($$;$$)
     open(RIGHT_FH, "<$right_filename");
     undef $INPUT_RECORD_SEPARATOR;
     my $right_string = <RIGHT_FH>;
-    ($output, $right_string) = $opts->{filter}->($output, $right_string) if $opts->{filter};
+    ($output, $right_string) = $opts->{filter}->($output, $right_string) 
+	if $opts->{filter};
     my $got_filename;
     $got_filename = $ext_file->('got');
     # TODO : Perhaps make sure we optionally use eq_or_diff from 

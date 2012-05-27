@@ -20,6 +20,7 @@ if ($OSNAME eq 'MSWin32') {
 }
 
 my $opts = {
+    do_test => 1,
     filter => sub{
 	my ($got_lines, $correct_lines) = @_;
 	my @result = ();
@@ -40,6 +41,6 @@ my $opts = {
 
 my $test_prog = File::Spec->catfile(dirname(__FILE__), 
 				    qw(.. example five.pm));
-my $ok = Helper::run_debugger("$test_prog --cmddir $TREPAN_DIR", 
+my $ok = Helper::run_debugger("$test_prog", $TREPAN_DIR, 
 			      'disassemble.cmd', undef, $opts);
 done_testing;
