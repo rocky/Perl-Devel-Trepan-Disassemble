@@ -35,7 +35,7 @@ my $builder = Module::Build->new(
     },
     test_requires  => { 
 	'Data::Dumper' => 0,
-        'Test::More'   => '0.81',
+        'Test::Simple' => '0.81',
     },
     requires => {
 	'perl'                              => '5.008',               
