@@ -1,4 +1,4 @@
--- (five.pm:4)
+-- main::(five.pm:4)
 my $x = "Something simple to demo, 'disassemble'";
 Subroutine five
 main::five:

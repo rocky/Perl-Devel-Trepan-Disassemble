@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-#  Copyright (C) 2012 Rocky Bernstein <rockycpan.org>
+#  Copyright (C) 2012 Rocky Bernstein <rocky@cpan.org>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,15 @@ my $builder = Module::Build->new(
     dist_version_from   => 'lib/Devel/Trepan/Disassemble.pm',
     license             => 'gpl',
     needs_compiler      => 0,
-    release_status      => 'stable',
+    release_status      => 'testing',  # or 'stable'
+
+    meta_merge => {
+	resources => {
+	    bugtracker  => 'https://github.com/rocky/Perl-Devel-Trepan/issues',
+	    repository  => 'http://github.com/rocky/Perl-Devel-Trepan'
+	}
+    },    
+
     configure_requires  => { 
 	'Module::Build' => '0.32',
     },
@@ -40,7 +48,7 @@ my $builder = Module::Build->new(
     requires => {
 	'perl'                              => '5.008',               
 	'B::Concise'                        => 0,
-	'Devel::Trepan'                     => '0.001008',
+	'Devel::Trepan'                     => '0.30',
 	'Getopt::Long'                      => 0,
         'rlib'                              => '0.02',
     },
