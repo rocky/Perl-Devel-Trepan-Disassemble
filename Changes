@@ -1,5 +1,7 @@
 Revision history for Devel-Trepan-Disassemble
 
+1.4  Revise for Devel::Trepan 0.30
+
 1.3  May 27, 2012
 - Redo disassembly test to not use the trepan.pl script.
 
