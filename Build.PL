@@ -55,15 +55,15 @@ my $builder = Module::Build->new(
         'Test::Simple' => '0.81',
     },
     recommends => {
-        'Devel::Callsite'                   => 0.05,
         'Pod::Text::Color'                  => 2.06,
     },
     requires => {
 	'perl'                              => '5.008',               
 	'B::Concise'                        => 0,
-	'Devel::Trepan'                     => '0.30',
+	'Devel::Trepan'                     => '0.40',
 	'Getopt::Long'                      => 0,
         'rlib'                              => '0.02',
+        'Devel::Callsite'                   => 0.05,
     },
     sign                => ($ENV{PERL_MB_NOSIGN} ? 0 : 1),
     );

@@ -111,6 +111,7 @@ sub parse_options($$)
 sub highlight_string($)
 {
     my ($string) = shift;
+    $perl_formatter->reset();
     $string = $perl_formatter->format_string($string);
     chomp $string;
     $string;
@@ -171,9 +172,7 @@ sub markup_tree($$)
 	if (/^(\s+)\|-#(\s+)(\d+):(.+)$/) {
 	    my ($space1, $space2, $lineno, $perl_code) = ($1, $2, $3, $4);
 	    if ($highlight) {
-		print "perl code: $perl_code\n";
 		my $marked = highlight_string($perl_code);
-		print "Marked: $marked\n";
 		$_ = "${space1}|-#${space2}${lineno}: $marked";
 	    }
 	    ## FIXME: move into DB::Breakpoint and adjust List.pm
@@ -266,6 +265,8 @@ unless (caller) {
     sub site { return callsite() };
     $DB::OP_addr = site();
     $cmd->run([$NAME, '-tree']);
+    print '=' x 50, "\n";
+    $cmd->run([$NAME, '-basic']);
 }
 
 1;
