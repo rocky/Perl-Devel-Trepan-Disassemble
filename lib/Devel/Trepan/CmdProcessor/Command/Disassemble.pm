@@ -8,6 +8,12 @@ use rlib '../../../..';
 ## use Devel::Trepan::Options; or is it default
 
 package Devel::Trepan::CmdProcessor::Command::Disassemble;
+
+## FIXME:: Make conditional
+use Devel::Trepan::DB::Colors;
+
+my $perl_formatter = Devel::Trepan::DB::Colors::setup();
+
 use Getopt::Long qw(GetOptionsFromArray);
 use B::Concise qw(set_style);
 
@@ -94,6 +100,37 @@ sub parse_options($$)
     $opts;
 }
 
+sub highlight_string($)
+{
+    my ($string) = shift;
+    no strict; no warnings;
+    $string = $perl_formatter->format_string($string);
+    chomp $string;
+    $string;
+  }
+
+sub markup_debug($) 
+{
+    my $lines = shift;
+    my @lines = split /\n/, $lines;
+    foreach (@lines) {
+	my $marker = '   ';
+	if (/^#(\s+)(\d+):(\s+)(.+)$/) {
+	    my $marked = highlight_string($4);
+	    $_ = "#$1$2:$3$marked";
+	    ;
+	} elsif (/^([A-Z]+) \((0x[0-9a-f]+)\)/) {
+	    my ($op, $hex_str) = ($1, $2);
+	    if (defined($DB::OP_addr)) {
+		my $check_hex_str = sprintf "0x%x", $DB::OP_addr;
+		$marker = '=> ' if ($check_hex_str eq $hex_str);
+	    }
+	}
+	$_ = $marker . $_;
+    }
+    return join("\n", @lines);
+}
+
 sub do_one($$$$)
 {
     my ($proc, $title, $options, $args) = @_;
@@ -104,6 +141,7 @@ sub do_one($$$$)
     B::Concise::walk_output(\my $buf);
     $walker->();			# walks and renders into $buf;
     ## FIXME: syntax highlight the output.
+    $buf = markup_debug($buf) if 'debug' eq $options->{line_style};
     $proc->msg($buf);
 }
 
@@ -138,6 +176,28 @@ sub run($$)
   
 # Demo it
 unless (caller) {
+    require Devel::Trepan::CmdProcessor;
+    eval { use Devel::Callsite };
+    my $proc = Devel::Trepan::CmdProcessor->new(undef, 'bogus');
+    my $cmd = __PACKAGE__->new($proc);
+    eval {
+        sub create_frame() {
+            my ($pkg, $file, $line, $fn) = caller(0);
+	    no warnings 'once';
+            $DB::package = $pkg;
+            return [
+                {
+                    file      => $file,
+                    fn        => $fn,
+                    line      => $line,
+                    pkg       => $pkg,
+                }];
+        }
+    };
+    # use Enbugger 'trepan'; Enbugger->stop;
+    sub site { return callsite() };
+    $DB::OP_addr = site();
+    $cmd->run([$NAME]);
 }
 
 1;
