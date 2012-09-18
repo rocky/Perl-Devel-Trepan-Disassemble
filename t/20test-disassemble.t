@@ -26,13 +26,14 @@ my $opts = {
 	my @result = ();
 	for my $line (split(/\n/, $got_lines)) {
 	    $line =~ s/(^    [A-Z]+) \(0x[a-f0-9]+\)/$1 (0x1234567)/;
+	    $line =~ s/(^=>  [A-Z]+) \(0x[a-f0-9]+\)/$1 (0x1234567)/;
             # use Enbugger; Enbugger->load_debugger('trepan');
 	    # Enbugger->stopn() if $line =~ /^op_first/;
 	    $line =~ s/^    \top_(first|last|next|sibling|sv)(\s+)(0x[a-f0-9]+)/    \top_$1${2}0x7654321/;
 	    $line =~ s/^    \top_type(\s+)(\d+)/    \top_type${1}1955/;
 	    $line =~ s/^    \top_private(.+)$/    \top_private 1027/;
 
-	    push @result, $line unless ($line =~ /op_seq/ || $line =~ /^    #/);
+	    push @result, $line unless ($line =~ /op_seq/);
 	}
 	$got_lines = join("\n", @result);
 	return ($got_lines, $correct_lines);
@@ -43,4 +44,6 @@ my $test_prog = File::Spec->catfile(dirname(__FILE__),
 				    qw(.. example five.pm));
 my $ok = Helper::run_debugger("$test_prog", $TREPAN_DIR, 
 			      'disassemble.cmd', undef, $opts);
+$ok = Helper::run_debugger("-e 1", $TREPAN_DIR, 
+			   'disasm2.cmd', undef, $opts);
 done_testing;

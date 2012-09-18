@@ -1,10 +1,23 @@
 #!/usr/bin/env perl 
 # Copyright (C) 2012 Rocky Bernstein <rocky@cpan.org>
 package Devel::Trepan::Disassemble;
-our $VERSION='1.4';
+our $VERSION='1.6_001';
 "All of the real action is in Devel::Trepan::CmdProcessor::Command::Disassemble.pm";
+__END__
 
 =pod
+
+=for comment
+This file is shared by both Disassemble.pod and Disassemble.pm after
+its __END__
+Disassemble.pod is useful in the Github wiki:
+https://github.com/rocky/Perl-Devel-Trepan-Disassemble/wiki
+where we can immediately see the results and others can contribute.
+
+=for comment
+The version Disassemble.pm however is what is seen at
+https://metacpan.org/module/Devel::Trepan::Disassemble and when folks
+download this file.
 
 =head1 NAME
 
@@ -12,12 +25,91 @@ Perl Disassembly plugin for L<Devel::Trepan> via L<B::Concise>
 
 =head1 SUMMARY
 
-This adds a "disassemble" command to the L<Devel::Trepan> debugger.
+This adds a I<disassemble> command to the L<Devel::Trepan> debugger.
 
-This plugin uses B::Concise to disassemble a list of subroutines or a
-packages.  
+=head1 DESCRIPTION
 
-See "help" inside the debugger for a list of options.
+B<disassemble> [I<options>] [I<subroutine>|I<package-name> ...]
+
+options: 
+    -concise
+    -terse 
+    -linenoise
+    -debug
+    -compact
+    -exec
+    -tree
+    -loose
+    -vt
+    -ascii
+
+Use L<B::Concise> to disassemble a list of subroutines or a packages.  If
+no subroutine or package is specified, use the subroutine where the
+program is currently stopped.
+
+=head1 EXAMPLES
+
+  $ trepan.pl -e 1
+
+  (trepanpl): dissassemble
+  Package Main
+    main program:
+  =>  LISTOP (0xa0dd208)
+    	op_next		0
+    	op_sibling	0
+    	op_ppaddr	PL_ppaddr[OP_LEAVE]
+    	op_type		185
+    	op_flags	13
+    	op_private	64	
+    	op_first	0xa0e6f60
+    	op_last		0xa0e7298
+    OP (0xa0e6f60)
+    	op_next		0xa0dd228
+    	op_sibling	0xa0dd228
+    	op_ppaddr	PL_ppaddr[OP_ENTER]
+    	op_type		184
+    	op_flags	0
+    	op_private	0	
+    # 1: 1
+    COP (0xa0dd228)
+    	op_next		0xa0dd208
+    	op_sibling	0xa0e7298
+    	op_ppaddr	PL_ppaddr[OP_DBSTATE]
+    	op_type		182
+    	op_flags	1
+    	op_private	0	256
+    OP (0xa0e7298)
+    	op_next		0xa0dd208
+    	op_sibling	0
+    	op_ppaddr	PL_ppaddr[OP_NULL]
+    	op_type		0
+    	op_flags	1
+    	op_private	0	
+
+Above, the C<=E<gt>> indicates the next instruction to run. 
+
+By default I<disasm> is an alias for I<disassemble>. Here is the
+C<-tree> option; C<--tree> is okay too.
+
+   (trepanpl): disasm -tree
+
+    main program:
+    0xa0dd208-+-0xa0e6f60
+              |-# 1:  1
+    0xa0dd228
+              `-0xa0e7298
+
+Finally, functions can be given
+
+   (trepanpl): disasm -basic File::Basename::basename
+
+    File::Basename::basename:
+    UNOP (0x8ad1d00)
+    	op_next		0
+    	op_sibling	0
+    	op_ppaddr	PL_ppaddr[OP_LEAVESUB]
+    	op_type		174
+    ...
 
 =head1 AUTHORS
 

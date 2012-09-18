@@ -19,6 +19,7 @@ Subroutine five
     	op_private 1027
     	op_first	0x7654321
     	op_last		0x7654321
+    # 2:     5;
     COP (0x1234567)
     	op_next		0x7654321
     	op_sibling	0x7654321

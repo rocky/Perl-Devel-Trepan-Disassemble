@@ -51,8 +51,10 @@ my $builder = Module::Build->new(
 	'Module::Build' => '0.32',
     },
     test_requires  => { 
-	'Data::Dumper' => 0,
-        'Test::Simple' => '0.81',
+	'Data::Dumper'                      => 0,
+        'Test::Simple'                      => '0.81',
+        'rlib'                              => '0.02',
+        'Syntax::Highlight::Perl::Improved' => '1.01',
     },
     recommends => {
         'Pod::Text::Color'                  => 2.06,
@@ -60,7 +62,7 @@ my $builder = Module::Build->new(
     requires => {
 	'perl'                              => '5.008',               
 	'B::Concise'                        => 0,
-	'Devel::Trepan'                     => '0.40',
+	'Devel::Trepan'                     => '0.42',
 	'Getopt::Long'                      => 0,
         'rlib'                              => '0.02',
         'Devel::Callsite'                   => 0.05,

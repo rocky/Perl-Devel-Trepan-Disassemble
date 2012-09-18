@@ -117,18 +117,30 @@ sub highlight_string($)
     $string;
   }
 
-sub markup_basic($$) 
+sub markup_basic($$$) 
 {
-    my ($lines, $highlight) = @_;
+    my ($lines, $highlight, $proc) = @_;
     my @lines = split /\n/, $lines;
     foreach (@lines) {
 	my $marker = '    ';
 	if (/^#(\s+)(\d+):(\s+)(.+)$/) {
 	    my ($space1, $lineno, $space2, $perl_code) = ($1, $2, $3, $4);
-	    # print "FOUND line $lineno\n";
-	    if ($highlight) {
-		my $marked = highlight_string($perl_code);
-		$_ = "#${space1}${lineno}:${space2}$marked";
+	    my $marked;
+	    if ($perl_code eq '-src not supported for -e' || 
+		$perl_code eq '-src unavailable under -e') {
+		my $opts = {
+		    output => $highlight,
+		    max_continue => 5,
+		};
+		my $filename = $proc->{frame}{file};
+		$marked = DB::LineCache::getline($filename, $lineno, $opts);
+		$_ = "#${space1}${lineno}:${space2}$marked" if $marked;
+	    } else {
+		# print "FOUND line $lineno\n";
+		if ($highlight) {
+		    $marked = highlight_string($perl_code);
+		    $_ = "#${space1}${lineno}:${space2}$marked";
+		}
 	    }
 	    ## FIXME: move into DB::Breakpoint and adjust List.pm
 	    if (exists($DB::dbline{$lineno}) and 
@@ -163,18 +175,33 @@ sub markup_basic($$)
     return join("\n", @lines);
 }
 
-sub markup_tree($$) 
+sub markup_tree($$$) 
 {
-    my ($lines, $highlight) = @_;
+    my ($lines, $highlight, $proc) = @_;
     my @lines = split /\n/, $lines;
     foreach (@lines) {
 	my $marker = '    ';
 	if (/^(\s+)\|-#(\s+)(\d+):(.+)$/) {
 	    my ($space1, $space2, $lineno, $perl_code) = ($1, $2, $3, $4);
-	    if ($highlight) {
-		my $marked = highlight_string($perl_code);
+	    my $marked;
+	    # FIXME: DRY code with markup_basic
+	    if ($perl_code =~ 
+		/-src (?:(?:not supported for)|(?:unavailable under)) -e/) {
+		my $opts = {
+		    output => $highlight,
+		    max_continue => 5,
+		};
+		my $filename = $proc->{frame}{file};
+		$marked = DB::LineCache::getline($filename, $lineno, $opts);
 		$_ = "${space1}|-#${space2}${lineno}: $marked";
+	    } else {
+		# print "FOUND line $lineno\n";
+		if ($highlight) {
+		    $marked = highlight_string($perl_code);
+		    $_ = "${space1}|-#${space2}${lineno}: $marked";
+		}
 	    }
+	    ## END above FIXME
 	    ## FIXME: move into DB::Breakpoint and adjust List.pm
 	    if (exists($DB::dbline{$lineno}) and 
 		my $brkpts = $DB::dbline{$lineno}) {
@@ -203,11 +230,12 @@ sub do_one($$$$)
     B::Concise::set_style_standard($options->{line_style});
     B::Concise::walk_output(\my $buf);
     $walker->();			# walks and renders into $buf;
+    my $highlight = $options->{highlight} && $proc->{settings}{highlight};
     ## FIXME: syntax highlight the output.a
     if ('-tree' eq $options->{order}) {
-	$buf = markup_tree($buf, $options->{highlight});
+	$buf = markup_tree($buf, $options->{highlight}, $proc);
     } elsif ('-basic' eq $options->{order}) {
-	$buf = markup_basic($buf, $options->{highlight});
+	$buf = markup_basic($buf, $options->{highlight}, $proc);
     }
     $proc->msg($buf);
 }
@@ -267,6 +295,8 @@ unless (caller) {
     $cmd->run([$NAME, '-tree']);
     print '=' x 50, "\n";
     $cmd->run([$NAME, '-basic']);
+    print '=' x 50, "\n";
+    $cmd->run([$NAME, '-basic', '--no-highlight']);
 }
 
 1;
