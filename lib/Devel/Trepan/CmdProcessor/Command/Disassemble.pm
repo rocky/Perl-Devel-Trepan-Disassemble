@@ -5,11 +5,11 @@ use warnings; no warnings 'redefine';
 use rlib '../../../..';
 
 # Our local modules
-## use Devel::Trepan::Options; or is it default
 
 package Devel::Trepan::CmdProcessor::Command::Disassemble;
 
 ## FIXME:: Make conditional
+use Syntax::Highlight::Perl::Improved ':FULL';
 use Devel::Trepan::DB::Colors;
 
 my $perl_formatter = Devel::Trepan::DB::Colors::setup();
@@ -42,11 +42,14 @@ $DEFAULT_OPTIONS = {
     line_style => 'debug',
     order      => '-basic',
     tree_style => '-ascii',
+    highlight  => 1,
 };
 
 our $NAME = set_name();
-our $HELP = <<"HELP";
-${NAME} [options] [SUBROUTINE|PACKAGE-NAME ...]
+our $HELP = <<'HELP';
+=pod
+
+B<disassemble> [I<options>] [I<subroutine>|I<package-name> ...]
 
 options: 
     -concise
@@ -60,9 +63,11 @@ options:
     -vt
     -ascii
 
-Use B::Concise to disassemble a list of subroutines or a packages.  If
+Use L<B::Concise> to disassemble a list of subroutines or a packages.  If
 no subroutine or package is specified, use the subroutine where the
 program is currently stopped.
+
+=cut
 HELP
 
 sub complete($$) 
@@ -70,7 +75,8 @@ sub complete($$)
     no warnings 'once';
     my ($self, $prefix) = @_;
     my @subs = keys %DB::sub;
-    my @opts = (qw(-concise -terse -linenoise -debug -basic -exec -tree -compact -loose -vt -ascii),
+    my @opts = (qw(-concise -terse -linenoise -debug -basic -exec -tree 
+                   -compact -loose -vt -ascii),
 		@subs);
     Devel::Trepan::Complete::complete_token(\@opts, $prefix) ;
 }
@@ -96,6 +102,8 @@ sub parse_options($$)
           '-loose'      => sub { $opts->{tree_style} = '-loose'; },
           '-vt'         => sub { $opts->{tree_style} = '-vt'; },
           '-ascii'      => sub { $opts->{tree_style} = '-ascii'; },
+          '-highlight'  => sub { $opts->{highlight} = 1; },
+          '-no-highlight' => sub { $opts->{highlight} = 0; },
 	);
     $opts;
 }
@@ -103,28 +111,84 @@ sub parse_options($$)
 sub highlight_string($)
 {
     my ($string) = shift;
-    no strict; no warnings;
     $string = $perl_formatter->format_string($string);
     chomp $string;
     $string;
   }
 
-sub markup_debug($) 
+sub markup_basic($$) 
 {
-    my $lines = shift;
+    my ($lines, $highlight) = @_;
     my @lines = split /\n/, $lines;
     foreach (@lines) {
-	my $marker = '   ';
+	my $marker = '    ';
 	if (/^#(\s+)(\d+):(\s+)(.+)$/) {
-	    my $marked = highlight_string($4);
-	    $_ = "#$1$2:$3$marked";
-	    ;
+	    my ($space1, $lineno, $space2, $perl_code) = ($1, $2, $3, $4);
+	    # print "FOUND line $lineno\n";
+	    if ($highlight) {
+		my $marked = highlight_string($perl_code);
+		$_ = "#${space1}${lineno}:${space2}$marked";
+	    }
+	    ## FIXME: move into DB::Breakpoint and adjust List.pm
+	    if (exists($DB::dbline{$lineno}) and 
+		my $brkpts = $DB::dbline{$lineno}) {
+		my $found = 0;
+		for my $bp (@{$brkpts}) {
+		    if (defined($bp)) {
+			$marker = sprintf('%s%02d ', $bp->icon_char, $bp->id);
+			$found = 1;
+			last;
+		    }
+		}
+	    }
+	    ## FIXME move above code
+	    
 	} elsif (/^([A-Z]+) \((0x[0-9a-f]+)\)/) {
 	    my ($op, $hex_str) = ($1, $2);
+	    # print "FOUND $op, $hex_str\n";
 	    if (defined($DB::OP_addr)) {
 		my $check_hex_str = sprintf "0x%x", $DB::OP_addr;
-		$marker = '=> ' if ($check_hex_str eq $hex_str);
+		$marker = '=>  ' if ($check_hex_str eq $hex_str);
 	    }
+	    if ($highlight) {
+		$op = $perl_formatter->format_token($op, 'Subroutine');
+		$hex_str = $perl_formatter->format_token($hex_str, 'Number');
+		$_ = "$op ($hex_str)";
+	    }
+
+	}
+	$_ = $marker . $_;
+    }
+    return join("\n", @lines);
+}
+
+sub markup_tree($$) 
+{
+    my ($lines, $highlight) = @_;
+    my @lines = split /\n/, $lines;
+    foreach (@lines) {
+	my $marker = '    ';
+	if (/^(\s+)\|-#(\s+)(\d+):(.+)$/) {
+	    my ($space1, $space2, $lineno, $perl_code) = ($1, $2, $3, $4);
+	    if ($highlight) {
+		print "perl code: $perl_code\n";
+		my $marked = highlight_string($perl_code);
+		print "Marked: $marked\n";
+		$_ = "${space1}|-#${space2}${lineno}: $marked";
+	    }
+	    ## FIXME: move into DB::Breakpoint and adjust List.pm
+	    if (exists($DB::dbline{$lineno}) and 
+		my $brkpts = $DB::dbline{$lineno}) {
+		my $found = 0;
+		for my $bp (@{$brkpts}) {
+		    if (defined($bp)) {
+			$marker = sprintf('%s%02d ', $bp->icon_char, $bp->id);
+			$found = 1;
+			last;
+		    }
+		}
+	    }
+	    ## FIXME move above code
 	}
 	$_ = $marker . $_;
     }
@@ -140,8 +204,12 @@ sub do_one($$$$)
     B::Concise::set_style_standard($options->{line_style});
     B::Concise::walk_output(\my $buf);
     $walker->();			# walks and renders into $buf;
-    ## FIXME: syntax highlight the output.
-    $buf = markup_debug($buf) if 'debug' eq $options->{line_style};
+    ## FIXME: syntax highlight the output.a
+    if ('-tree' eq $options->{order}) {
+	$buf = markup_tree($buf, $options->{highlight});
+    } elsif ('-basic' eq $options->{order}) {
+	$buf = markup_basic($buf, $options->{highlight});
+    }
     $proc->msg($buf);
 }
 
@@ -197,7 +265,7 @@ unless (caller) {
     # use Enbugger 'trepan'; Enbugger->stop;
     sub site { return callsite() };
     $DB::OP_addr = site();
-    $cmd->run([$NAME]);
+    $cmd->run([$NAME, '-tree']);
 }
 
 1;
