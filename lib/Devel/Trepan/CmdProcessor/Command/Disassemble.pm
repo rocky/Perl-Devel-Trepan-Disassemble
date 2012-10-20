@@ -266,7 +266,7 @@ sub do_one($$$$)
     B::Concise::walk_output(\my $buf);
     $walker->();			# walks and renders into $buf;
     my $highlight = $options->{highlight} && $proc->{settings}{highlight};
-    ## FIXME: syntax highlight the output.a
+    ## FIXME: syntax highlight the output.
     if ('-tree' eq $options->{order}) {
 	$buf = markup_tree($buf, $options->{highlight}, $proc);
     } elsif ('-basic' eq $options->{order}) {
