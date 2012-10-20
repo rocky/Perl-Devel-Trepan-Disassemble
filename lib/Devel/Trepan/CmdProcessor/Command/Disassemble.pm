@@ -71,7 +71,6 @@ $DEFAULT_OPTIONS = {
     line_style => 'debug',
     order      => '-basic',
     tree_style => '-ascii',
-    highlight  => 1,  # Actually, this is reset on each call to "run"
 };
 
 our $NAME = set_name();
@@ -91,10 +90,17 @@ options:
     -loose
     -vt
     -ascii
+    -from I<line number>
+    -to  I<line_number>
 
 Use L<B::Concise> to disassemble a list of subroutines or a packages.  If
 no subroutine or package is specified, use the subroutine where the
 program is currently stopped.
+
+Flags C<-from> and C<-to> respectively exclude lines less than or
+greater that the supplied line number. Other flags are are the
+corresponding I<B::Concise> flags and that should be consulted for
+their meaning.
 
 =cut
 HELP
@@ -105,7 +111,7 @@ sub complete($$)
     my ($self, $prefix) = @_;
     my @subs = keys %DB::sub;
     my @opts = (qw(-concise -terse -linenoise -debug -basic -exec -tree 
-                   -compact -loose -vt -ascii),
+                   -compact -loose -vt -ascii -from -to),
 		@subs);
     Devel::Trepan::Complete::complete_token(\@opts, $prefix) ;
 }
@@ -114,25 +120,28 @@ sub parse_options($$)
 {
     my ($self, $args) = @_;
     my $opts = $DEFAULT_OPTIONS;
-    my $result = &GetOptionsFromArray($args,
-          '-concise'    => sub { $opts->{line_style} = 'concise'},
-          '-terse'      => sub { $opts->{line_style} = 'terse'},
-          '-linenoise'  => sub { $opts->{line_style} = 'linenoise'},
-          '-debug'      => sub { $opts->{line_style} = 'debug'},
-	  # FIXME: would need to check that ENV vars B_CONCISE_FORMAT, B_CONCISE_TREE_FORMAT
-	  # and B_CONCISE_GOTO_FORMAT are set
-          # '-env'        => sub { $opts->{line_style} = 'env'},
-
-          '-basic'      => sub { $opts->{order} = '-basic'; },
-          '-exec'       => sub { $opts->{order} = '-exec'; },
-          '-tree'       => sub { $opts->{order} = '-tree'; },
-
-          '-compact'    => sub { $opts->{tree_style} = '-compact'; },
-          '-loose'      => sub { $opts->{tree_style} = '-loose'; },
-          '-vt'         => sub { $opts->{tree_style} = '-vt'; },
-          '-ascii'      => sub { $opts->{tree_style} = '-ascii'; },
-          '-highlight'  => sub { $opts->{highlight} = 1; },
-          '-no-highlight' => sub { $opts->{highlight} = 0; },
+    my $result = &GetOptionsFromArray(
+	$args,
+	'-concise'    => sub { $opts->{line_style} = 'concise'},
+	'-terse'      => sub { $opts->{line_style} = 'terse'},
+	'-linenoise'  => sub { $opts->{line_style} = 'linenoise'},
+	'-debug'      => sub { $opts->{line_style} = 'debug'},
+	# FIXME: would need to check that ENV vars B_CONCISE_FORMAT, B_CONCISE_TREE_FORMAT
+	# and B_CONCISE_GOTO_FORMAT are set
+	# '-env'        => sub { $opts->{line_style} = 'env'},
+	
+	'-basic'      => sub { $opts->{order} = '-basic'; },
+	'-exec'       => sub { $opts->{order} = '-exec'; },
+	'-tree'       => sub { $opts->{order} = '-tree'; },
+	
+	'-compact'    => sub { $opts->{tree_style} = '-compact'; },
+	'-loose'      => sub { $opts->{tree_style} = '-loose'; },
+	'-vt'         => sub { $opts->{tree_style} = '-vt'; },
+	'-ascii'      => sub { $opts->{tree_style} = '-ascii'; },
+	'-highlight'  => sub { $opts->{highlight} = 1; },
+	'-no-highlight' => sub { $opts->{highlight} = 0; },
+	'from=i'     => \$opts->{from},
+	'to=i'       => \$opts->{to}
 	);
     $opts;
 }
@@ -146,14 +155,17 @@ sub highlight_string($)
     $string;
   }
 
-sub markup_basic($$$) 
+sub markup_basic($$$$$) 
 {
-    my ($lines, $highlight, $proc) = @_;
+    my ($lines, $highlight, $proc, $from, $to) = @_;
     my @lines = split /\n/, $lines;
+    my $current_line = 0;
+    my @newlines = ();
     foreach (@lines) {
 	my $marker = '    ';
 	if (/^#(\s+)(\d+):(\s+)(.+)$/) {
 	    my ($space1, $lineno, $space2, $perl_code) = ($1, $2, $3, $4);
+	    $current_line = $lineno;
 	    my $marked;
 	    if ($perl_code eq '-src not supported for -e' || 
 		$perl_code eq '-src unavailable under -e') {
@@ -206,8 +218,10 @@ sub markup_basic($$$)
 
 	}
 	$_ = $marker . $_;
+	next if $current_line < $from or $current_line > $to;
+	push @newlines, $_;
     }
-    return join("\n", @lines);
+    return join("\n", @newlines);
 }
 
 sub markup_tree($$$) 
@@ -270,7 +284,7 @@ sub do_one($$$$)
     if ('-tree' eq $options->{order}) {
 	$buf = markup_tree($buf, $options->{highlight}, $proc);
     } elsif ('-basic' eq $options->{order}) {
-	$buf = markup_basic($buf, $options->{highlight}, $proc);
+	$buf = markup_basic($buf, $options->{highlight}, $proc, $options->{from}, $options->{to});
     }
     $proc->msg($buf);
 }
@@ -282,6 +296,8 @@ sub run($$)
     shift @args;
     my $proc = $self->{proc};
     $DEFAULT_OPTIONS->{highlight} = $proc->{settings}{highlight};
+    $DEFAULT_OPTIONS->{from} = 0;
+    $DEFAULT_OPTIONS->{to} = 100000;
     my $options = parse_options($self, \@args);
     unless (scalar(@args)) {
 	if ($proc->funcname && $proc->funcname ne 'DB::DB') {
@@ -336,9 +352,9 @@ unless (caller) {
     $DB::OP_addr = site();
     $cmd->run([$NAME, '-tree']);
     print '=' x 50, "\n";
-    $cmd->run([$NAME, '-basic']);
+    $cmd->run([$NAME, '-basic', '-from', __LINE__, '-to',  __LINE__ +1]);
     print '=' x 50, "\n";
-    $cmd->run([$NAME, '-basic', '--no-highlight']);
+    $cmd->run([$NAME, '-basic', '--no-highlight', '-to', 25]);
 }
 
 1;

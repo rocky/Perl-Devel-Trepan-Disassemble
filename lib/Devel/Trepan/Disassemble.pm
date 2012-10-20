@@ -1,7 +1,7 @@
 #!/usr/bin/env perl 
 # Copyright (C) 2012 Rocky Bernstein <rocky@cpan.org>
 package Devel::Trepan::Disassemble;
-our $VERSION='1.6_001';
+our $VERSION='1.7';
 "All of the real action is in Devel::Trepan::CmdProcessor::Command::Disassemble.pm";
 __END__
 
@@ -31,9 +31,10 @@ This adds a I<disassemble> command to the L<Devel::Trepan> debugger.
 
 B<disassemble> [I<options>] [I<subroutine>|I<package-name> ...]
 
-options: 
+I<options>:
+
     -concise
-    -terse 
+    -terse
     -linenoise
     -debug
     -compact
@@ -42,10 +43,17 @@ options:
     -loose
     -vt
     -ascii
+    -from <line-number>
+    -to <line-number>
 
 Use L<B::Concise> to disassemble a list of subroutines or a packages.  If
 no subroutine or package is specified, use the subroutine where the
 program is currently stopped.
+
+Flags C<-from> and C<-to> respectively exclude lines less than or
+greater that the supplied line number. Other flags are are the
+corresponding I<B::Concise> flags and that should be consulted for
+their meaning.
 
 =head1 EXAMPLES
 
@@ -99,7 +107,7 @@ C<-tree> option; C<--tree> is okay too.
     0xa0dd228
               `-0xa0e7298
 
-Finally, functions can be given
+Functions can be given:
 
    (trepanpl): disasm -basic File::Basename::basename
 
@@ -110,6 +118,11 @@ Finally, functions can be given
     	op_ppaddr	PL_ppaddr[OP_LEAVESUB]
     	op_type		174
     ...
+
+Finally, you can limit the range of output using C<-from> and/or C<-to>: 
+
+   (trepanpl): disasm -from 227 -to 236 -basic File::Basename::basename 
+  
 
 =head1 AUTHORS
 

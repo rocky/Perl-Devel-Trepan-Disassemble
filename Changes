@@ -1,5 +1,9 @@
 Revision history for Devel-Trepan-Disassemble
 
+1.7  Oct 20, 2012
+- Add -from and -to options to allow limiting output
+- on -basic output op_flags is now shown as a bit vector with flag descriptions
+
 1.6  Sept 18, 2012
 - Botched 1.5 release
 
