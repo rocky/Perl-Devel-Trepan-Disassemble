@@ -31,6 +31,35 @@ unless (@ISA) {
 EOE
 }
 
+# OPf_ flags from Perl's op.h
+# Note weird bit combiniation 3, 'want list', we have to handle separately
+
+sub interpret_flags($) 
+{
+    my $op_flags = shift;
+    my @OP_FLAGS = (
+	'want void',
+	'want scalar',
+	'want kids',
+	'parenthesized',
+	'reference',
+	'modify lvalue',
+	'arg stacked',
+	'special',
+	);
+    my @flags_str = ();
+    if ( ($op_flags & 0b11) == 0b11 ) {
+	push @flags_str, 'want list';
+	$op_flags ^= 0b11;
+    }
+    while ($op_flags) {
+	my $flag_str = shift @OP_FLAGS;
+	unshift(@flags_str, $flag_str) if $op_flags & 1;
+	$op_flags /= 2;
+    }
+    return @flags_str ? (': ' . join(', ', @flags_str)) : '';
+}
+
 use strict;
 
 use vars qw(@ISA $DEFAULT_OPTIONS); 
@@ -156,6 +185,12 @@ sub markup_basic($$$)
 	    }
 	    ## FIXME move above code
 	    
+	} elsif (/^(\s+op_flags\s+)(\d+)$/) {
+	    # Interpret flag string
+	    my $flag = $2;
+	    my $bin_flag_str = sprintf '%07b', $flag;
+	    $bin_flag_str = $perl_formatter->format_token($bin_flag_str) if $highlight;
+	    $_ = sprintf "%s%s%s", $1, $bin_flag_str, interpret_flags($flag);
 	} elsif (/^([A-Z]+) \((0x[0-9a-f]+)\)/) {
 	    my ($op, $hex_str) = ($1, $2);
 	    # print "FOUND $op, $hex_str\n";
@@ -262,6 +297,8 @@ sub run($$)
 		   ["-stash=$disasm_unit"]);
 	} elsif ($proc->is_method($disasm_unit)) {
 	    do_one($proc, "Subroutine $disasm_unit", $options, [$disasm_unit]);
+	} elsif (-r $disasm_unit) {
+	    do_one($proc, "File $disasm_unit", $options, [$disasm_unit]);
 	} else {
 	    $proc->errmsg("Don't know $disasm_unit as a package or function");
 	}
@@ -271,6 +308,10 @@ sub run($$)
   
 # Demo it
 unless (caller) {
+
+    for my $flags (0, 1, 2, 3, 0b1101, 0b100011) {
+	printf "%07b: %s\n", $flags, interpret_flags($flags);
+    }
     require Devel::Trepan::CmdProcessor;
     eval { use Devel::Callsite };
     my $proc = Devel::Trepan::CmdProcessor->new(undef, 'bogus');

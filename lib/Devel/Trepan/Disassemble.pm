@@ -59,7 +59,7 @@ program is currently stopped.
     	op_sibling	0
     	op_ppaddr	PL_ppaddr[OP_LEAVE]
     	op_type		185
-    	op_flags	13
+    	op_flags	0001101: parenthesized, want kids, want void
     	op_private	64	
     	op_first	0xa0e6f60
     	op_last		0xa0e7298
@@ -68,7 +68,7 @@ program is currently stopped.
     	op_sibling	0xa0dd228
     	op_ppaddr	PL_ppaddr[OP_ENTER]
     	op_type		184
-    	op_flags	0
+    	op_flags	0000000
     	op_private	0	
     # 1: 1
     COP (0xa0dd228)
@@ -76,14 +76,14 @@ program is currently stopped.
     	op_sibling	0xa0e7298
     	op_ppaddr	PL_ppaddr[OP_DBSTATE]
     	op_type		182
-    	op_flags	1
+    	op_flags	0000001: want void
     	op_private	0	256
     OP (0xa0e7298)
     	op_next		0xa0dd208
     	op_sibling	0
     	op_ppaddr	PL_ppaddr[OP_NULL]
     	op_type		0
-    	op_flags	1
+    	op_flags	0000001: want void
     	op_private	0	
 
 Above, the C<=E<gt>> indicates the next instruction to run. 

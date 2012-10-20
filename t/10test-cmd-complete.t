@@ -11,7 +11,7 @@ BEGIN {
     use_ok( 'Devel::Trepan::CmdProcessor::Command::Complete' );
 }
 
-require Devel::Trepan::CmdProcessor;
+require_ok( 'Devel::Trepan::CmdProcessor' );
 
 # Monkey::Patch doesn't work with methods with prototypes;
 my $counter = 1;

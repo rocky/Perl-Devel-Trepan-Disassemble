@@ -14,8 +14,10 @@ lib/Devel/Trepan/Disassemble.pm
 t/00load.t
 t/00test-pod.t
 t/10test-cmd-complete.t		Note: 10 tests are unit tests
+t/10test-opflags.t              interpret_flags tests
 t/20test-disassemble.t
 t/Helper.pm
+t/Makefile                      boilerplate to rerun in top-level Makefile
 t/data/disasm2.cmd
 t/data/disasm2.right
 t/data/disassemble.cmd
