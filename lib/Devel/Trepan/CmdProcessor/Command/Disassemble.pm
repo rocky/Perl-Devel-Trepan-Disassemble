@@ -71,7 +71,7 @@ $DEFAULT_OPTIONS = {
     line_style => 'debug',
     order      => '-basic',
     tree_style => '-ascii',
-    highlight  => 1,
+    highlight  => 1,  # Actually, this is reset on each call to "run"
 };
 
 our $NAME = set_name();
@@ -189,7 +189,7 @@ sub markup_basic($$$)
 	    # Interpret flag string
 	    my $flag = $2;
 	    my $bin_flag_str = sprintf '%07b', $flag;
-	    $bin_flag_str = $perl_formatter->format_token($bin_flag_str) if $highlight;
+	    $bin_flag_str = $perl_formatter->format_token($bin_flag_str, 'Number') if $highlight;
 	    $_ = sprintf "%s%s%s", $1, $bin_flag_str, interpret_flags($flag);
 	} elsif (/^([A-Z]+) \((0x[0-9a-f]+)\)/) {
 	    my ($op, $hex_str) = ($1, $2);
@@ -280,8 +280,9 @@ sub run($$)
     my ($self, $args) = @_;
     my @args = @$args;
     shift @args;
-    my $options = parse_options($self, \@args);
     my $proc = $self->{proc};
+    $DEFAULT_OPTIONS->{highlight} = $proc->{settings}{highlight};
+    my $options = parse_options($self, \@args);
     unless (scalar(@args)) {
 	if ($proc->funcname && $proc->funcname ne 'DB::DB') {
 	    push @args, $proc->funcname;
