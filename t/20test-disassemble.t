@@ -32,6 +32,7 @@ my $opts = {
 	    $line =~ s/^    \top_(first|last|next|sibling|sv)(\s+)(0x[a-f0-9]+)/    \top_$1${2}0x7654321/;
 	    $line =~ s/^    \top_type(\s+)(\d+)/    \top_type${1}1955/;
 	    $line =~ s/^    \top_private(.+)$/    \top_private 1027/;
+	    $line =~ s/^# 1: use Devel::Trepan;BEGIN.*$/# 1: use Devel::Trepan;/;
 
 	    push @result, $line unless ($line =~ /op_seq/);
 	}
