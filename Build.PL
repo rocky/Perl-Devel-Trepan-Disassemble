@@ -62,10 +62,10 @@ my $builder = Module::Build->new(
     requires => {
 	'perl'                              => '5.008',               
 	'B::Concise'                        => 0,
-	'Devel::Trepan'                     => '0.46',
+	'Devel::Trepan'                     => '0.47',
 	'Getopt::Long'                      => 0,
         'rlib'                              => '0.02',
-        'Devel::Callsite'                   => 0.05,
+        'Devel::Callsite'                   => 0.06,
     },
     sign                => ($ENV{PERL_MB_NOSIGN} ? 0 : 1),
     );

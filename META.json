@@ -26,7 +26,7 @@
          "requires" : {
             "B::Concise" : "0",
             "Devel::Callsite" : "0.05",
-            "Devel::Trepan" : "0.42",
+            "Devel::Trepan" : "0.46",
             "Getopt::Long" : "0",
             "perl" : "5.008",
             "rlib" : "0.02"
@@ -40,10 +40,10 @@
       },
       "Devel::Trepan::Disassemble" : {
          "file" : "lib/Devel/Trepan/Disassemble.pm",
-         "version" : "1.6"
+         "version" : "1.7_001"
       }
    },
-   "release_status" : "stable",
+   "release_status" : "testing",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/rocky/Perl-Devel-Trepan-Disassemble/issues"
@@ -55,5 +55,5 @@
          "url" : "http://github.com/rocky/Perl-Devel-Trepan-Disassemble"
       }
    },
-   "version" : "1.6"
+   "version" : "1.7_001"
 }

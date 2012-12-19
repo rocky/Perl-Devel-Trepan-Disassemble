@@ -35,3 +35,4 @@ Subroutine five
     	op_flags	0000010: want scalar
     	op_private 1027
     	op_sv		0x7654321
+trepan.pl: That's all, folks...
