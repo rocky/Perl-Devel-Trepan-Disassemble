@@ -13,8 +13,11 @@ BEGIN {
 
 use rlib $TREPAN_DIR;
 use Test::More;
+use B::Concise;
 if ($OSNAME eq 'MSWin32') {
-    plan skip_all => "Strawberry Perl doesn't handle exec well" 
+    plan skip_all => "Strawberry Perl doesn't handle exec well"
+} elsif ($B::Concise::VERSION < 0.83) {
+    plan skip_all => "Need a B:Concise 0.83 or greater for this test"
 } else {
     plan;
 }
