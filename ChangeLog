@@ -1,3 +1,9 @@
+2012-12-18  rocky <rocky@cpan.org>
+
+	* Build.PL, ChangeLog, Changes, META.json, META.yml,
+	lib/Devel/Trepan/Disassemble.pm, t/data/disasm2.right,
+	t/data/disassemble.right: Get ready for 1.8 release.
+
 2012-10-24  Rocky Bernstein <rocky@cpan.org>
 
 	* t/20test-disassemble.t: See above

@@ -8,7 +8,7 @@ Makefile.PL
 README				README in perlpod format for CPAN
 README.md			README in Markdown format for github
 example/five.pm
-gpl-3.0.txt
+gpl-2.0.txt
 lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm
 lib/Devel/Trepan/Disassemble.pm
 t/00load.t
