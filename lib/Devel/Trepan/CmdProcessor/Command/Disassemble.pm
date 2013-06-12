@@ -11,6 +11,7 @@ package Devel::Trepan::CmdProcessor::Command::Disassemble;
 ## FIXME:: Make conditional
 use Syntax::Highlight::Perl::Improved ':FULL';
 use Devel::Trepan::DB::Colors;
+use Devel::Trepan::DB::LineCache;
 
 my $perl_formatter = Devel::Trepan::DB::Colors::setup();
 
@@ -34,7 +35,7 @@ EOE
 # OPf_ flags from Perl's op.h
 # Note weird bit combiniation 3, 'want list', we have to handle separately
 
-sub interpret_flags($) 
+sub interpret_flags($)
 {
     my $op_flags = shift;
     my @OP_FLAGS = (
@@ -62,8 +63,8 @@ sub interpret_flags($)
 
 use strict;
 
-use vars qw(@ISA $DEFAULT_OPTIONS); 
-@ISA = qw(Devel::Trepan::CmdProcessor::Command); 
+use vars qw(@ISA $DEFAULT_OPTIONS);
+@ISA = qw(Devel::Trepan::CmdProcessor::Command);
 
 use vars @CMD_VARS;  # Value inherited from parent
 
@@ -79,9 +80,9 @@ our $HELP = <<'HELP';
 
 B<disassemble> [I<options>] [I<subroutine>|I<package-name> ...]
 
-options: 
+options:
     -concise
-    -terse 
+    -terse
     -linenoise
     -debug
     -compact
@@ -105,17 +106,17 @@ their meaning.
 =cut
 HELP
 
-sub complete($$) 
+sub complete($$)
 {
     no warnings 'once';
     my ($self, $prefix) = @_;
     my @subs = keys %DB::sub;
-    my @opts = (qw(-concise -terse -linenoise -debug -basic -exec -tree 
+    my @opts = (qw(-concise -terse -linenoise -debug -basic -exec -tree
                    -compact -loose -vt -ascii -from -to),
 		@subs);
     Devel::Trepan::Complete::complete_token(\@opts, $prefix) ;
 }
-    
+
 sub parse_options($$)
 {
     my ($self, $args) = @_;
@@ -129,11 +130,11 @@ sub parse_options($$)
 	# FIXME: would need to check that ENV vars B_CONCISE_FORMAT, B_CONCISE_TREE_FORMAT
 	# and B_CONCISE_GOTO_FORMAT are set
 	# '-env'        => sub { $opts->{line_style} = 'env'},
-	
+
 	'-basic'      => sub { $opts->{order} = '-basic'; },
 	'-exec'       => sub { $opts->{order} = '-exec'; },
 	'-tree'       => sub { $opts->{order} = '-tree'; },
-	
+
 	'-compact'    => sub { $opts->{tree_style} = '-compact'; },
 	'-loose'      => sub { $opts->{tree_style} = '-loose'; },
 	'-vt'         => sub { $opts->{tree_style} = '-vt'; },
@@ -155,7 +156,7 @@ sub highlight_string($)
     $string;
   }
 
-sub markup_basic($$$$$) 
+sub markup_basic($$$$$)
 {
     my ($lines, $highlight, $proc, $from, $to) = @_;
     my @lines = split /\n/, $lines;
@@ -167,14 +168,14 @@ sub markup_basic($$$$$)
 	    my ($space1, $lineno, $space2, $perl_code) = ($1, $2, $3, $4);
 	    $current_line = $lineno;
 	    my $marked;
-	    if ($perl_code eq '-src not supported for -e' || 
+	    if ($perl_code eq '-src not supported for -e' ||
 		$perl_code eq '-src unavailable under -e') {
 		my $opts = {
 		    output => $highlight,
 		    max_continue => 5,
 		};
 		my $filename = $proc->{frame}{file};
-		$marked = DB::LineCache::getline($filename, $lineno, $opts);
+		$marked = getline($filename, $lineno, $opts);
 		$_ = "#${space1}${lineno}:${space2}$marked" if $marked;
 	    } else {
 		# print "FOUND line $lineno\n";
@@ -184,7 +185,7 @@ sub markup_basic($$$$$)
 		}
 	    }
 	    ## FIXME: move into DB::Breakpoint and adjust List.pm
-	    if (exists($DB::dbline{$lineno}) and 
+	    if (exists($DB::dbline{$lineno}) and
 		my $brkpts = $DB::dbline{$lineno}) {
 		my $found = 0;
 		for my $bp (@{$brkpts}) {
@@ -196,7 +197,7 @@ sub markup_basic($$$$$)
 		}
 	    }
 	    ## FIXME move above code
-	    
+
 	} elsif (/^(\s+op_flags\s+)(\d+)$/) {
 	    # Interpret flag string
 	    my $flag = $2;
@@ -224,7 +225,7 @@ sub markup_basic($$$$$)
     return join("\n", @newlines);
 }
 
-sub markup_tree($$$) 
+sub markup_tree($$$)
 {
     my ($lines, $highlight, $proc) = @_;
     my @lines = split /\n/, $lines;
@@ -234,7 +235,7 @@ sub markup_tree($$$)
 	    my ($space1, $space2, $lineno, $perl_code) = ($1, $2, $3, $4);
 	    my $marked;
 	    # FIXME: DRY code with markup_basic
-	    if ($perl_code =~ 
+	    if ($perl_code =~
 		/-src (?:(?:not supported for)|(?:unavailable under)) -e/) {
 		my $opts = {
 		    output => $highlight,
@@ -252,7 +253,7 @@ sub markup_tree($$$)
 	    }
 	    ## END above FIXME
 	    ## FIXME: move into DB::Breakpoint and adjust List.pm
-	    if (exists($DB::dbline{$lineno}) and 
+	    if (exists($DB::dbline{$lineno}) and
 		my $brkpts = $DB::dbline{$lineno}) {
 		my $found = 0;
 		for my $bp (@{$brkpts}) {
@@ -310,7 +311,7 @@ sub run($$)
     for my $disasm_unit (@args) {
 	no strict 'refs';
 	if (%{$disasm_unit.'::'}) {
-	    do_one($proc, "Package $disasm_unit", $options, 
+	    do_one($proc, "Package $disasm_unit", $options,
 		   ["-stash=$disasm_unit"]);
 	} elsif ($proc->is_method($disasm_unit)) {
 	    do_one($proc, "Subroutine $disasm_unit", $options, [$disasm_unit]);
@@ -322,7 +323,7 @@ sub run($$)
     }
 }
 
-  
+
 # Demo it
 unless (caller) {
 

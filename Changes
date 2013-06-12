@@ -1,5 +1,8 @@
 Revision history for Devel-Trepan-Disassemble
 
+1.9  June 12, 2013
+DB::LineCache is now Devel::Trepan::DB::LineCache
+
 1.8  Dec 18, 2012
 Deal with deal with customized Perl's. need 0.47 or better for testing output
 change.
@@ -15,8 +18,8 @@ change.
 - Add POD help
 - Mark breakpoints
 - Colorize source code lines if highlight
-- In basic format: 
-  * Mark current location via Callsite 
+- In basic format:
+  * Mark current location via Callsite
 
 1.4  Aug 20, 2012
 - Revise for Devel::Trepan 0.30

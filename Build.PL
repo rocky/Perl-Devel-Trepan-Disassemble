@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-#  Copyright (C) 2012 Rocky Bernstein <rocky@cpan.org>
+#  Copyright (C) 2012-2013 Rocky Bernstein <rocky@cpan.org>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@ my $lib = File::Spec->catfile(dirname(__FILE__), 'lib');
 unshift @INC, $lib;
 require Devel::Trepan::Disassemble;
 
-my $release_status = ($Devel::Trepan::Disassemble::VERSION =~ /_/) ? 
+my $release_status = ($Devel::Trepan::Disassemble::VERSION =~ /_/) ?
     'testing' : 'stable';
 
-my $builder = Module::Build->new( 
+my $builder = Module::Build->new(
     module_name         => 'Devel::Trepan::Disassemble',
     add_to_cleanup      => [ 'Devel-Trepan-*', 'tmp*', '*.got'  ],
     create_makefile_pl  => 'passthrough',
-    dist_abstract       => 
+    dist_abstract       =>
     'Adds disassemble support via B::Concise to Devel::Trepan',
     dist_author         => 'Rocky Bernstein <rocky@cpan.org>',
     dist_version_from   => 'lib/Devel/Trepan/Disassemble.pm',
@@ -45,12 +45,12 @@ my $builder = Module::Build->new(
 	    bugtracker  => 'https://github.com/rocky/Perl-Devel-Trepan-Disassemble/issues',
 	    repository  => 'http://github.com/rocky/Perl-Devel-Trepan-Disassemble'
 	}
-    },    
+    },
 
-    configure_requires  => { 
+    configure_requires  => {
 	'Module::Build' => '0.32',
     },
-    test_requires  => { 
+    test_requires  => {
 	'Data::Dumper'                      => 0,
         'Test::Simple'                      => '0.81',
         'rlib'                              => '0.02',
@@ -60,9 +60,9 @@ my $builder = Module::Build->new(
         'Pod::Text::Color'                  => 2.06,
     },
     requires => {
-	'perl'                              => '5.008',               
+	'perl'                              => '5.008',
 	'B::Concise'                        => 0,
-	'Devel::Trepan'                     => '0.47',
+	'Devel::Trepan'                     => '0.49',
 	'Getopt::Long'                      => 0,
         'rlib'                              => '0.02',
         'Devel::Callsite'                   => 0.06,
