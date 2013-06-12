@@ -1,4 +1,4 @@
--- main::(-e:1 remapped -e:1)
+-- main::(-e remapped -e:1)
 use Devel::Trepan;
 Package Main
     main program:

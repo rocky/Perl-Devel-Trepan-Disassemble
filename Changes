@@ -1,11 +1,12 @@
 Revision history for Devel-Trepan-Disassemble
 
 1.9  June 12, 2013
-DB::LineCache is now Devel::Trepan::DB::LineCache
+- DB::LineCache is now Devel::Trepan::DB::LineCache
+- Minor bug fixes
 
 1.8  Dec 18, 2012
-Deal with deal with customized Perl's. need 0.47 or better for testing output
-change.
+- Deal with deal with customized Perl's. need 0.47 or better for testing output
+  change.
 
 1.7  Oct 20, 2012
 - Add -from and -to options to allow limiting output
