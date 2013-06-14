@@ -17,7 +17,7 @@ use B::Concise;
 if ($OSNAME eq 'MSWin32') {
     plan skip_all => "Strawberry Perl doesn't handle exec well"
 } elsif ($B::Concise::VERSION < 0.83) {
-    plan skip_all => "Need a B:Concise 0.83 or greater for this test"
+    plan skip_all => "Need a B::Concise 0.83 or greater for this test"
 } else {
     plan;
 }
@@ -47,10 +47,10 @@ my $opts = {
     }
 };
 
-my $test_prog = File::Spec->catfile(dirname(__FILE__), 
+my $test_prog = File::Spec->catfile(dirname(__FILE__),
 				    qw(.. example five.pm));
-my $ok = Helper::run_debugger("$test_prog", $TREPAN_DIR, 
+my $ok = Helper::run_debugger("$test_prog", $TREPAN_DIR,
 			      'disassemble.cmd', undef, $opts);
-$ok = Helper::run_debugger("-e 1", $TREPAN_DIR, 
+$ok = Helper::run_debugger("-e 1", $TREPAN_DIR,
 			   'disasm2.cmd', undef, $opts);
 done_testing;
