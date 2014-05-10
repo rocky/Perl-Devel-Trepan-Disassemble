@@ -1,3 +1,28 @@
+2013-06-12  rocky <rocky@cpan.org>
+
+	* Changes, GNUmakefile, META.json, META.yml, t/data/disasm2.right: 
+	Get ready for release 1.9
+
+2013-06-11  rocky <rocky@cpan.org>
+
+	* Build.PL, Changes,
+	lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm,
+	lib/Devel/Trepan/Disassemble.pm: Get ready For 1.9 release
+
+2013-01-06  rocky <rocky@cpan.org>
+
+	* gpl-2.0.txt, t/20test-disassemble.t: Forgot to include gpl file.
+	Small commented-out code typo.
+
+2012-12-25  rocky <rocky@cpan.org>
+
+	* : commit 3159d517c1f6a724960b67133d456b27bfca3303 Author: rocky
+	<rocky@cpan.org> Date:   Tue Dec 25 06:46:04 2012 -0500
+
+2012-12-21  Rocky Bernstein <rocky@cpan.org>
+
+	* t/20test-disassemble.t: Less testing if we have B::Concise < 0.83
+
 2012-12-18  rocky <rocky@cpan.org>
 
 	* Build.PL, ChangeLog, Changes, META.json, META.yml,
@@ -37,7 +62,6 @@
 	lib/Devel/Trepan/Disassemble.pm, t/10test-cmd-complete.t,
 	t/10test-opflags.t, t/Makefile, t/data/disasm2.right,
 	t/data/disassemble.right: Show interpretation of flag bits in -basic
-
 
 2012-09-18  rocky <rocky@cpan.org>
 
@@ -121,17 +145,8 @@
 
 2012-05-25  rocky <rocky@cpan.org>
 
-	Merge branch 'master' of
-	github.com:rocky/Perl-Devel-Trepan-Disassemble  Conflicts:
-	.gitignore 	META.json 	META.yml 	lib/Devel/Trepan/Disassemble.pm
-
-2012-05-25  rocky <rocky@cpan.org>
-
-	* .gitignore, Build.PL, Changes, MANIFEST, META.json, META.yml,
-	MYMETA.json, MYMETA.yml, README, lib/Devel/Trepan/Disassemble.pm,
-	t/00load.t, t/00test-pod.t: Build.PL: Remove spurios 'use' causing a
-	CPANTS failure Add more tests and more doucmentation. Some
-	Administrivia too.
+	* : commit a43c3b7e62b947fc3f9ca6921cdc043e8cbbcea0 Author: rocky
+	<rocky@cpan.org> Date:   Fri May 25 16:57:05 2012 -0400
 
 2012-05-22  Rocky Bernstein <rocky@cpan.org>
 
