@@ -1,3 +1,21 @@
+2014-05-15  rocky <rocky@cpan.org>
+
+	* Build.PL, ChangeLog, Changes: Get ready for release 1.99
+
+2014-05-15  rocky <rocky@cpan.org>
+
+	* lib/Devel/Trepan/Disassemble.pm, t/20test-disassemble.t: Get ready
+	for release 1.99
+
+2014-05-09  rocky <rocky@cpan.org>
+
+	* : commit 6690fc37e102e6acd43f605a3fc533c44f5c9fb4 Author: rocky
+	<rocky@cpan.org> Date:   Fri May 9 22:45:44 2014 -0400
+
+2013-06-14  Rocky Bernstein <rocky@cpan.org>
+
+	* t/20test-disassemble.t: Small module name typo in comment
+
 2013-06-12  rocky <rocky@cpan.org>
 
 	* Changes, GNUmakefile, META.json, META.yml, t/data/disasm2.right: 

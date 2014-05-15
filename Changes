@@ -1,5 +1,8 @@
 Revision history for Devel-Trepan-Disassemble
 
+1.99  May 15, 2014  Lewis Bernstein update
+- Upgrade in Devel::Trepan has caused tests to fail
+
 1.9  June 12, 2013
 - DB::LineCache is now Devel::Trepan::DB::LineCache
 - Minor bug fixes

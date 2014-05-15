@@ -16,7 +16,7 @@ use Test::More;
 use B::Concise;
 if ($OSNAME eq 'MSWin32') {
     plan skip_all => "Strawberry Perl doesn't handle exec well"
-} elsif ($B::Concise::VERSION < 0.83) {
+} elsif ($B::Concise::VERSION lt '0.83') {
     plan skip_all => "Need a B::Concise 0.83 or greater for this test"
 } else {
     plan;
@@ -30,6 +30,7 @@ my $opts = {
 	for my $line (split(/\n/, $got_lines)) {
 	    $line =~ s/(^    [A-Z]+) \(0x[a-f0-9]+\)/$1 (0x1234567)/;
 	    $line =~ s/(^=>  [A-Z]+) \(0x[a-f0-9]+\)/$1 (0x1234567)/;
+	    $line =~ s/^-- main::\((.+) \@0x[a-f0-9]+\)/-- main::($1)/;
             # use Enbugger; Enbugger->load_debugger('trepan');
 	    # Enbugger->stop() if $line =~ /^op_first/;
 	    $line =~ s/^    \top_(first|last|next|sibling|sv)(\s+)(0x[a-f0-9]+)/    \top_$1${2}0x7654321/;

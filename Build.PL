@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-#  Copyright (C) 2012-2013 Rocky Bernstein <rocky@cpan.org>
+#  Copyright (C) 2012-2014 Rocky Bernstein <rocky@cpan.org>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -62,9 +62,12 @@ my $builder = Module::Build->new(
     requires => {
 	'perl'                              => '5.008',
 	'B::Concise'                        => 0,
-	'Devel::Trepan'                     => '0.49',
+	# Could go back to 0.49, changes since then are important.
+	'Devel::Trepan'                     => '0.56',
 	'Getopt::Long'                      => 0,
         'rlib'                              => '0.02',
+	# Could go back to 0.06 but need to get changes in 0.08
+	# out in use.
         'Devel::Callsite'                   => 0.06,
     },
     sign                => ($ENV{PERL_MB_NOSIGN} ? 0 : 1),
