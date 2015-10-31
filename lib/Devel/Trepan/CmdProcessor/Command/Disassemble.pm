@@ -176,7 +176,7 @@ sub markup_basic($$$$$)
 	if (/^#(\s+)(\d+):(\s+)(.+)$/) {
 	    my ($space1, $lineno, $space2, $perl_code) = ($1, $2, $3, $4);
 	    $current_line = $lineno;
-	    my $marked;
+	    my $marked = $perl_code;
 	    if ($perl_code eq '-src not supported for -e' ||
 		$perl_code eq '-src unavailable under -e') {
 		my $opts = {
@@ -249,7 +249,7 @@ sub markup_tree($$$)
 	my $marker = '    ';
 	if (/^(.*)\|-#(\s+)(\d+):(.+)$/) {
 	    my ($prefix, $space, $lineno, $perl_code) = ($1, $2, $3, $4);
-	    my $marked;
+	    my $marked = $perl_code;
 	    # FIXME: DRY code with markup_basic
 	    if ($perl_code =~
 		/-src (?:(?:not supported for)|(?:unavailable under)) -e/) {
@@ -312,7 +312,7 @@ sub markup_tree_terse($$$)
     	my $marker = '    ';
     	if (/^(\s*)# (\d+):(.+)$/) {
     	    my ($space, $lineno, $perl_code) = ($1, $2, $3, $4);
-    	    my $marked;
+    	    my $marked = $perl_code;
     	    # FIXME: DRY code with markup_basic
     	    if ($perl_code =~
     		/-src (?:(?:not supported for)|(?:unavailable under)) -e/) {
