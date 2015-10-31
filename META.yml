@@ -2,39 +2,38 @@
 abstract: 'Adds disassemble support via B::Concise to Devel::Trepan'
 author:
   - 'Rocky Bernstein <rocky@cpan.org>'
-build_requires: {}
+build_requires:
+  Data::Dumper: '0'
+  Syntax::Highlight::Perl::Improved: '1.01'
+  Test::Simple: '0.81'
+  rlib: '0.02'
 configure_requires:
-  Module::Build: 0.32
+  Module::Build: '0.32'
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4007, CPAN::Meta::Converter version 2.120921'
-license: open_source
+generated_by: 'Module::Build version 0.4206, CPAN::Meta::Converter version 2.150005'
+license: gpl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
+  version: '1.4'
 name: Devel-Trepan-Disassemble
 provides:
   Devel::Trepan::CmdProcessor::Command::Disassemble:
     file: lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm
-    version: 0
   Devel::Trepan::Disassemble:
     file: lib/Devel/Trepan/Disassemble.pm
-    version: 1.99
+    version: v2.0.0
 recommends:
-  Pod::Text::Color: 2.06
+  Pod::Text::Color: '2.06'
 requires:
-  B::Concise: 0
-  Devel::Callsite: 0.06
-  Devel::Trepan: 0.56
-  Getopt::Long: 0
-  perl: 5.008
-  rlib: 0.02
+  B::Concise: '0'
+  Devel::Callsite: '0.08'
+  Devel::Trepan: '0.70'
+  Getopt::Long: '0'
+  perl: '5.008008'
+  rlib: '0.02'
 resources:
   bugtracker: https://github.com/rocky/Perl-Devel-Trepan-Disassemble/issues
   license: http://www.gnu.org/licenses/old-licenses/gpl-1.0.txt
   repository: http://github.com/rocky/Perl-Devel-Trepan-Disassemble
-version: 1.99
-x_test_requires:
-  Data::Dumper: 0
-  Syntax::Highlight::Perl::Improved: 1.01
-  Test::Simple: 0.81
-  rlib: 0.02
+version: v2.0.0
+x_serialization_backend: 'CPAN::Meta::YAML version 0.012'

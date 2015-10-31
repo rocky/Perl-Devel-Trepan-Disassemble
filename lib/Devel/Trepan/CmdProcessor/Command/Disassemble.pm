@@ -283,7 +283,7 @@ sub markup_tree($$$)
 	    ## FIXME move above code
 	} elsif (/^((?:[ |`])*-?)(0x[0-9a-f]+)(.*)$/) {
     	    my ($space, $hex_str, $rest) = ($1, $2, $3);
-	    if ($check_hex_str && $check_hex_str eq $hex_str) {
+	    if ($check_hex_str && /$check_hex_str/) {
 		$marker = '=>  ';
 		$marker = $proc->bolden($marker) if $highlight;
 	    }

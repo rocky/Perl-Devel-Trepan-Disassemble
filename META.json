@@ -4,9 +4,9 @@
       "Rocky Bernstein <rocky@cpan.org>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4007, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Module::Build version 0.4206",
    "license" : [
-      "open_source"
+      "gpl_1"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
@@ -25,22 +25,29 @@
          },
          "requires" : {
             "B::Concise" : "0",
-            "Devel::Callsite" : "0.06",
-            "Devel::Trepan" : "0.56",
+            "Devel::Callsite" : "0.08",
+            "Devel::Trepan" : "0.70",
             "Getopt::Long" : "0",
-            "perl" : "5.008",
+            "perl" : "5.008008",
+            "rlib" : "0.02"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Data::Dumper" : "0",
+            "Syntax::Highlight::Perl::Improved" : "1.01",
+            "Test::Simple" : "0.81",
             "rlib" : "0.02"
          }
       }
    },
    "provides" : {
       "Devel::Trepan::CmdProcessor::Command::Disassemble" : {
-         "file" : "lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm",
-         "version" : 0
+         "file" : "lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm"
       },
       "Devel::Trepan::Disassemble" : {
          "file" : "lib/Devel/Trepan/Disassemble.pm",
-         "version" : "1.99"
+         "version" : "v2.0.0"
       }
    },
    "release_status" : "stable",
@@ -55,11 +62,6 @@
          "url" : "http://github.com/rocky/Perl-Devel-Trepan-Disassemble"
       }
    },
-   "version" : "1.99",
-   "x_test_requires" : {
-      "Data::Dumper" : "0",
-      "Syntax::Highlight::Perl::Improved" : "1.01",
-      "Test::Simple" : "0.81",
-      "rlib" : "0.02"
-   }
+   "version" : "v2.0.0",
+   "x_serialization_backend" : "JSON::PP version 2.27203"
 }
