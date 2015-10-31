@@ -1,3 +1,16 @@
+2015-10-31  rocky <rocky@cpan.org>
+
+	* lib/Devel/Trepan/Disassemble.pm: Get ready for 2.0.0
+
+2015-10-31  rocky <rocky@cpan.org>
+
+	* .travis.yml, Build.PL, ChangeLog, META.json, META.yml,
+	lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm,
+	lib/Devel/Trepan/Disassemble.pm, t/data/disasm2.right,
+	t/data/disassemble.right: Colorize tree and terse formats. Redo how
+	we mark current line in line via Devel::Callsite and its requirement
+	in Devel::trepan 0.70. Try travis.
+
 2014-05-15  rocky <rocky@cpan.org>
 
 	* Build.PL, ChangeLog, Changes, lib/Devel/Trepan/Disassemble.pm,

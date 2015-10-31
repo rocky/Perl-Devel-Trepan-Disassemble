@@ -1,5 +1,10 @@
 Revision history for Devel-Trepan-Disassemble
 
+2.0.0  Oct 31, 2015 Jedi
+- Colorize tree and terse formats.
+- Redo how  we mark current line in line via Devel::Callsite and its requirement
+  in Devel::trepan 0.70.
+
 1.99  May 15, 2014  Lewis Bernstein update
 - Upgrade in Devel::Trepan has caused tests to fail
 
