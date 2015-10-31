@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2011, 2012 Rocky Bernstein <rocky@cpan.org>
+# Copyright (C) 2011-2012, 2015 Rocky Bernstein <rocky@cpan.org>
 use warnings; no warnings 'redefine';
 
 use rlib '../../../..';
@@ -75,6 +75,9 @@ $DEFAULT_OPTIONS = {
 };
 
 our $NAME = set_name();
+=head2 Synopsis
+
+=cut
 our $HELP = <<'HELP';
 =pod
 
@@ -162,6 +165,12 @@ sub markup_basic($$$$$)
     my @lines = split /\n/, $lines;
     my $current_line = 0;
     my @newlines = ();
+    # use Enbugger 'trepan'; Enbugger->stop;
+    my $check_hex_str;
+    if ($proc->{frame}{addr}) {
+	$check_hex_str = sprintf "0x%x", $proc->{frame}{addr};
+    }
+    my $filename = $proc->{frame}{file};
     foreach (@lines) {
 	my $marker = '    ';
 	if (/^#(\s+)(\d+):(\s+)(.+)$/) {
@@ -174,7 +183,6 @@ sub markup_basic($$$$$)
 		    output => $highlight,
 		    max_continue => 5,
 		};
-		my $filename = $proc->{frame}{file};
 		$marked = getline($filename, $lineno, $opts);
 		$_ = "#${space1}${lineno}:${space2}$marked" if $marked;
 	    } else {
@@ -202,18 +210,19 @@ sub markup_basic($$$$$)
 	    # Interpret flag string
 	    my $flag = $2;
 	    my $bin_flag_str = sprintf '%07b', $flag;
-	    $bin_flag_str = $perl_formatter->format_token($bin_flag_str, 'Number') if $highlight;
+	    $bin_flag_str = $perl_formatter->format_token($bin_flag_str, 'Number') if
+		$highlight;
 	    $_ = sprintf "%s%s%s", $1, $bin_flag_str, interpret_flags($flag);
 	} elsif (/^([A-Z]+) \((0x[0-9a-f]+)\)/) {
 	    my ($op, $hex_str) = ($1, $2);
 	    # print "FOUND $op, $hex_str\n";
-	    if (defined($DB::OP_addr)) {
-		my $check_hex_str = sprintf "0x%x", $DB::OP_addr;
-		$marker = '=>  ' if ($check_hex_str eq $hex_str);
+	    if ($check_hex_str && $check_hex_str eq $hex_str) {
+		$marker = '=>  ';
+		$marker = $proc->bolden($marker) if $highlight;
 	    }
 	    if ($highlight) {
 		$op = $perl_formatter->format_token($op, 'Subroutine');
-		$hex_str = $perl_formatter->format_token($hex_str, 'Number');
+		$hex_str = $perl_formatter->format_token($hex_str, 'Label');
 		$_ = "$op ($hex_str)";
 	    }
 
@@ -229,10 +238,17 @@ sub markup_tree($$$)
 {
     my ($lines, $highlight, $proc) = @_;
     my @lines = split /\n/, $lines;
+    # use Enbugger 'trepan'; Enbugger->stop;
+    my $addr = $proc->{frame}{addr};
+    my $filename = $proc->{frame}{file};
+    my $check_hex_str;
+    if ($proc->{frame}{addr}) {
+	$check_hex_str = sprintf "0x%x", $proc->{frame}{addr};
+    }
     foreach (@lines) {
 	my $marker = '    ';
-	if (/^(\s+)\|-#(\s+)(\d+):(.+)$/) {
-	    my ($space1, $space2, $lineno, $perl_code) = ($1, $2, $3, $4);
+	if (/^(.*)\|-#(\s+)(\d+):(.+)$/) {
+	    my ($prefix, $space, $lineno, $perl_code) = ($1, $2, $3, $4);
 	    my $marked;
 	    # FIXME: DRY code with markup_basic
 	    if ($perl_code =~
@@ -243,12 +259,12 @@ sub markup_tree($$$)
 		};
 		my $filename = $proc->{frame}{file};
 		$marked = DB::LineCache::getline($filename, $lineno, $opts);
-		$_ = "${space1}|-#${space2}${lineno}: $marked";
+		$_ = "${prefix}|-#${space}${lineno}: $marked";
 	    } else {
 		# print "FOUND line $lineno\n";
 		if ($highlight) {
 		    $marked = highlight_string($perl_code);
-		    $_ = "${space1}|-#${space2}${lineno}: $marked";
+		    $_ = "${prefix}|-#${space}${lineno}: $marked";
 		}
 	    }
 	    ## END above FIXME
@@ -265,8 +281,83 @@ sub markup_tree($$$)
 		}
 	    }
 	    ## FIXME move above code
+	} elsif (/^((?:[ |`])*-?)(0x[0-9a-f]+)(.*)$/) {
+    	    my ($space, $hex_str, $rest) = ($1, $2, $3);
+	    if ($check_hex_str && $check_hex_str eq $hex_str) {
+		$marker = '=>  ';
+		$marker = $proc->bolden($marker) if $highlight;
+	    }
+	    if ($highlight) {
+		$hex_str = $perl_formatter->format_token($hex_str, 'Label');
+		$_ = "${space}${hex_str}${rest}";
+	    }
 	}
 	$_ = $marker . $_;
+    }
+    return join("\n", @lines);
+}
+
+sub markup_tree_terse($$$)
+{
+    my ($lines, $highlight, $proc) = @_;
+    my @lines = split /\n/, $lines;
+    # use Enbugger 'trepan'; Enbugger->stop;
+    my $addr = $proc->{frame}{addr};
+    my $check_hex_str;
+    if ($proc->{frame}{addr}) {
+	$check_hex_str = sprintf "0x%x", $proc->{frame}{addr};
+    }
+    my $filename = $proc->{frame}{file};
+    foreach (@lines) {
+    	my $marker = '    ';
+    	if (/^(\s*)# (\d+):(.+)$/) {
+    	    my ($space, $lineno, $perl_code) = ($1, $2, $3, $4);
+    	    my $marked;
+    	    # FIXME: DRY code with markup_basic
+    	    if ($perl_code =~
+    		/-src (?:(?:not supported for)|(?:unavailable under)) -e/) {
+    		my $opts = {
+    		    output => $highlight,
+    		    max_continue => 5,
+    		};
+    		my $filename = $proc->{frame}{file};
+    		$marked = DB::LineCache::getline($filename, $lineno, $opts);
+    	    } else {
+    		# print "FOUND line $lineno\n";
+    		$marked = highlight_string($perl_code) if $highlight;
+    	    }
+    	    my $lineno_str = $highlight ?
+    		$perl_formatter->format_token($lineno, 'Number') : $lineno ;
+    	    $_ = "${space}#${lineno_str}:$marked";
+    	    ## END above FIXME
+    	    ## FIXME: move into DB::Breakpoint and adjust List.pm
+    	    if (exists($DB::dbline{$lineno}) and
+		my $brkpts = $DB::dbline{$lineno}) {
+    		my $found = 0;
+    		for my $bp (@{$brkpts}) {
+    		    if (defined($bp)) {
+    			$marker = sprintf('%s%02d ', $bp->icon_char, $bp->id);
+    			$found = 1;
+    			last;
+    		    }
+    		}
+    	    }
+    	    ## FIXME move above code
+	} elsif (/^(\s*)([A-Z]+) \((0x[0-9a-f]+)\) (\w+) (.*)$/) {
+    	    my ($space, $op, $hex_str, $name, $rest) = ($1, $2, $3, $4, $5);
+    	    if ($check_hex_str && $check_hex_str eq $hex_str) {
+    		$marker = '=>  ';
+    		$marker = $proc->bolden($marker) if $highlight;
+    	    }
+    	    if ($highlight) {
+    		$hex_str = $perl_formatter->format_token($hex_str, 'Label');
+    		$op = $perl_formatter->format_token($op, 'Subroutine');
+    		$name = $perl_formatter->format_token($name, 'Builtin_Function');
+    	    }
+    	    $_ = "${space}${op} ($hex_str) $name ${rest}";
+    	}
+
+    	$_ = $marker . $_;
     }
     return join("\n", @lines);
 }
@@ -282,10 +373,13 @@ sub do_one($$$$)
     $walker->();			# walks and renders into $buf;
     my $highlight = $options->{highlight} && $proc->{settings}{highlight};
     ## FIXME: syntax highlight the output.
-    if ('-tree' eq $options->{order}) {
+    if ('terse' eq $options->{line_style}) {
+	$buf = markup_tree_terse($buf, $options->{highlight}, $proc);
+    } elsif ('-tree' eq $options->{order}) {
 	$buf = markup_tree($buf, $options->{highlight}, $proc);
     } elsif ('-basic' eq $options->{order}) {
-	$buf = markup_basic($buf, $options->{highlight}, $proc, $options->{from}, $options->{to});
+	$buf = markup_basic($buf, $options->{highlight}, $proc, $options->{from},
+			    $options->{to});
     }
     $proc->msg($buf);
 }
@@ -331,31 +425,29 @@ unless (caller) {
 	printf "%07b: %s\n", $flags, interpret_flags($flags);
     }
     require Devel::Trepan::CmdProcessor;
-    eval { use Devel::Callsite };
+    eval { use Devel::Callsite;  use B; };
     my $proc = Devel::Trepan::CmdProcessor->new(undef, 'bogus');
-    my $cmd = __PACKAGE__->new($proc);
-    eval {
-        sub create_frame() {
-            my ($pkg, $file, $line, $fn) = caller(0);
-	    no warnings 'once';
-            $DB::package = $pkg;
-            return [
-                {
-                    file      => $file,
-                    fn        => $fn,
-                    line      => $line,
-                    pkg       => $pkg,
-                }];
-        }
+    my $root_cv = B::main_root;
+    $proc->{frame} = {
+	line => __LINE__ - 1,
+	file => __FILE__,
+	fn   => 'DB::DB',
+	pkg  => __PACKAGE__,
+	addr => $$root_cv,
     };
-    # use Enbugger 'trepan'; Enbugger->stop;
-    sub site { return callsite() };
-    $DB::OP_addr = site();
-    $cmd->run([$NAME, '-tree']);
+    $proc->{settings}{highlight} = 1;
+    my $cmd = __PACKAGE__->new($proc);
+    # $cmd->run([$NAME, '-terse', '--highlight']);
+    # print '=' x 50, "\n";
+    $cmd->run([$NAME, '-tree', '--highlight']);
     print '=' x 50, "\n";
-    $cmd->run([$NAME, '-basic', '-from', __LINE__, '-to',  __LINE__ +1]);
-    print '=' x 50, "\n";
-    $cmd->run([$NAME, '-basic', '--no-highlight', '-to', 25]);
+    # $cmd->run([$NAME, '-basic', '--highlight']);
+    # print '=' x 50, "\n";
+    # $cmd->run([$NAME, '-basic', '--highlight', '-from', 10, '-to',  20]);
+    # print '=' x 50, "\n";
+    # $cmd->run([$NAME, '-basic', '--no-highlight', '-to', 5]);
+    # print '=' x 50, "\n";
+    # $cmd->run([$NAME, '-basic', '--highlight', '-from', __LINE__-25]);
 }
 
 1;

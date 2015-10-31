@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # Copyright (C) 2012-2014 Rocky Bernstein <rocky@cpan.org>
 package Devel::Trepan::Disassemble;
-our $VERSION='1.99';
+our $VERSION='1.99_01';
 "All of the real action is in Devel::Trepan::CmdProcessor::Command::Disassemble.pm";
 __END__
 

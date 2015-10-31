@@ -1,0 +1,21 @@
+language: perl
+
+sudo: false
+
+env:
+  - AUTOMATED_TESTING=1 PREREQS="rlib B::Concise Data::Dumper Devel::Callsite Getopt::Long Devel::Trepan Pod::Text Syntax::Highlight::Perl::Improved Test::Simple"
+
+after_failure:
+  - cat /home/travis/.cpanm/work/*/build.log
+
+install:
+  # Prerequisites
+  - "cpanm $PREREQS"
+
+perl:
+  - "5.20"
+  - "5.18"
+  - "5.16"
+  - "5.14"
+  - "5.12"
+  - "5.10"

@@ -1,6 +1,7 @@
 -- main::(-e remapped -e:1)
 use Devel::Trepan;
 Package Main
+------------
     main program:
 =>  LISTOP (0x1234567)
     	op_next		0

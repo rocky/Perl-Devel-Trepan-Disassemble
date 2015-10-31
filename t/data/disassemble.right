@@ -1,6 +1,7 @@
 -- main::(five.pm:4)
 my $x = "Something simple to demo, 'disassemble'";
 Subroutine five
+---------------
     main::five:
     UNOP (0x1234567)
     	op_next		0

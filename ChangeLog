@@ -1,11 +1,8 @@
 2014-05-15  rocky <rocky@cpan.org>
 
-	* Build.PL, ChangeLog, Changes: Get ready for release 1.99
-
-2014-05-15  rocky <rocky@cpan.org>
-
-	* lib/Devel/Trepan/Disassemble.pm, t/20test-disassemble.t: Get ready
-	for release 1.99
+	* Build.PL, ChangeLog, Changes, lib/Devel/Trepan/Disassemble.pm,
+	t/20test-disassemble.t: Upgrade in Devel::Trepan has caused tests to
+	fail. Get ready for release 1.99
 
 2014-05-09  rocky <rocky@cpan.org>
 
