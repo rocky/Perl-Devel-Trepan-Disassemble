@@ -20,17 +20,12 @@ use B::Concise qw(set_style);
 
 use if !@ISA, Devel::Trepan::CmdProcessor::Command ;
 
-unless (@ISA) {
-    eval <<"EOE";
-    use constant ALIASES    => qw(disasm);
-    use constant CATEGORY   => 'data';
-    use constant SHORT_HELP => 'Disassemble subroutine(s)';
-    use constant MIN_ARGS  => 0;  # Need at least this many
-    use constant MAX_ARGS  => undef;  # Need at most this many - undef -> unlimited.
-    use constant NEED_STACK => 0;
-
-EOE
-}
+use constant ALIASES    => qw(disasm);
+use constant CATEGORY   => 'data';
+use constant SHORT_HELP => 'Disassemble subroutine(s)';
+use constant MIN_ARGS  => 0;  # Need at least this many
+use constant MAX_ARGS  => undef;  # Need at most this many - undef -> unlimited.
+use constant NEED_STACK => 0;
 
 # OPf_ flags from Perl's op.h
 # Note weird bit combiniation 3, 'want list', we have to handle separately
@@ -69,7 +64,7 @@ use vars qw(@ISA $DEFAULT_OPTIONS);
 use vars @CMD_VARS;  # Value inherited from parent
 
 $DEFAULT_OPTIONS = {
-    line_style => 'debug',
+    line_style => 'terse',
     order      => '-basic',
     tree_style => '-ascii',
 };
@@ -437,10 +432,10 @@ unless (caller) {
     };
     $proc->{settings}{highlight} = 1;
     my $cmd = __PACKAGE__->new($proc);
-    # $cmd->run([$NAME, '-terse', '--highlight']);
+    $cmd->run([$NAME, '-terse', '--highlight']);
     # print '=' x 50, "\n";
-    $cmd->run([$NAME, '-tree', '--highlight']);
-    print '=' x 50, "\n";
+    # $cmd->run([$NAME, '-tree', '--highlight']);
+    # print '=' x 50, "\n";
     # $cmd->run([$NAME, '-basic', '--highlight']);
     # print '=' x 50, "\n";
     # $cmd->run([$NAME, '-basic', '--highlight', '-from', 10, '-to',  20]);
