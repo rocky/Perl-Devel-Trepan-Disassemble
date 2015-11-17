@@ -140,7 +140,8 @@ sub parse_options($$)
 	'-highlight'  => sub { $opts->{highlight} = 1; },
 	'-no-highlight' => sub { $opts->{highlight} = 0; },
 	'from=i'     => \$opts->{from},
-	'to=i'       => \$opts->{to}
+	'to=i'       => \$opts->{to},
+	#'addr=s'     => \$opts->{addr},
 	);
     $opts;
 }
@@ -229,10 +230,12 @@ sub markup_basic($$$$$)
     return join("\n", @newlines);
 }
 
-sub markup_tree($$$)
+sub markup_tree($$$$$)
 {
-    my ($lines, $highlight, $proc) = @_;
+    my ($lines, $highlight, $proc, $from, $to) = @_;
     my @lines = split /\n/, $lines;
+    my $current_line = 0;
+    my @newlines = ();
     # use Enbugger 'trepan'; Enbugger->stop;
     my $addr = $proc->{frame}{addr};
     my $filename = $proc->{frame}{file};
@@ -288,14 +291,18 @@ sub markup_tree($$$)
 	    }
 	}
 	$_ = $marker . $_;
+	next if $current_line < $from or $current_line > $to;
+	push @newlines, $_;
     }
-    return join("\n", @lines);
+    return join("\n", @newlines);
 }
 
-sub markup_tree_terse($$$)
+sub markup_tree_terse($$$$$)
 {
-    my ($lines, $highlight, $proc) = @_;
+    my ($lines, $highlight, $proc, $from, $to) = @_;
     my @lines = split /\n/, $lines;
+    my $current_line = 0;
+    my @newlines = ();
     # use Enbugger 'trepan'; Enbugger->stop;
     my $addr = $proc->{frame}{addr};
     my $check_hex_str;
@@ -307,6 +314,7 @@ sub markup_tree_terse($$$)
     	my $marker = '    ';
     	if (/^(\s*)# (\d+):(.+)$/) {
     	    my ($space, $lineno, $perl_code) = ($1, $2, $3, $4);
+	    $current_line = $lineno;
     	    my $marked = $perl_code;
     	    # FIXME: DRY code with markup_basic
     	    if ($perl_code =~
@@ -353,8 +361,11 @@ sub markup_tree_terse($$$)
     	}
 
     	$_ = $marker . $_;
+	next if $current_line < $from or $current_line > $to;
+	push @newlines, $_;
+
     }
-    return join("\n", @lines);
+    return join("\n", @newlines);
 }
 
 sub do_one($$$$)
@@ -369,9 +380,11 @@ sub do_one($$$$)
     my $highlight = $options->{highlight} && $proc->{settings}{highlight};
     ## FIXME: syntax highlight the output.
     if ('terse' eq $options->{line_style}) {
-	$buf = markup_tree_terse($buf, $options->{highlight}, $proc);
+	$buf = markup_tree_terse($buf, $options->{highlight}, $proc,
+				 $options->{from}, $options->{to});
     } elsif ('-tree' eq $options->{order}) {
-	$buf = markup_tree($buf, $options->{highlight}, $proc);
+	$buf = markup_tree($buf, $options->{highlight}, $proc, $options->{from},
+			   $options->{to});
     } elsif ('-basic' eq $options->{order}) {
 	$buf = markup_basic($buf, $options->{highlight}, $proc, $options->{from},
 			    $options->{to});
@@ -433,8 +446,7 @@ unless (caller) {
     $proc->{settings}{highlight} = 1;
     my $cmd = __PACKAGE__->new($proc);
     $cmd->run([$NAME, '-terse', '--highlight']);
-    # print '=' x 50, "\n";
-    # $cmd->run([$NAME, '-tree', '--highlight']);
+    print '=' x 50, "\n";
     # print '=' x 50, "\n";
     # $cmd->run([$NAME, '-basic', '--highlight']);
     # print '=' x 50, "\n";

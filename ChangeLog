@@ -1,6 +1,38 @@
+2015-11-17  rocky <rocky@cpan.org>
+
+	* Build.PL, lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm,
+	lib/Devel/Trepan/Disassemble.pm: Add -from -to for tree formats
+
+2015-11-12  rocky <rocky@cpan.org>
+
+	* t/data/disasm2.cmd, t/data/disassemble.cmd: Tests need to be
+	explicit about which format to use
+
+2015-11-12  rocky <rocky@cpan.org>
+
+	* lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm, t/00load.t: 
+	Disassemble.pm: default line style is terse now. Don't need eval
+	anymore. 00load.t: stupid cut-and-paste mistakes
+
 2015-10-31  rocky <rocky@cpan.org>
 
-	* lib/Devel/Trepan/Disassemble.pm: Get ready for 2.0.0
+	* README.md: Revise
+
+2015-10-31  rocky <rocky@cpan.org>
+
+	* lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm: Ensure
+	$marked is initialized
+
+2015-10-31  rocky <rocky@cpan.org>
+
+	* META.json, META.yml,
+	lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm: Improve
+	current-position marker for tree display
+
+2015-10-31  rocky <rocky@cpan.org>
+
+	* ChangeLog, Changes, lib/Devel/Trepan/Disassemble.pm: Get ready for
+	2.0.0
 
 2015-10-31  rocky <rocky@cpan.org>
 
