@@ -10,7 +10,7 @@ build_requires:
 configure_requires:
   Module::Build: '0.32'
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4206, CPAN::Meta::Converter version 2.150005'
+generated_by: 'Module::Build version 0.4214, CPAN::Meta::Converter version 2.150001'
 license: gpl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -21,19 +21,18 @@ provides:
     file: lib/Devel/Trepan/CmdProcessor/Command/Disassemble.pm
   Devel::Trepan::Disassemble:
     file: lib/Devel/Trepan/Disassemble.pm
-    version: v2.0.0
+    version: v2.0.1
 recommends:
   Pod::Text::Color: '2.06'
 requires:
   B::Concise: '0'
   Devel::Callsite: '0.08'
-  Devel::Trepan: '0.70'
+  Devel::Trepan: '0.71'
   Getopt::Long: '0'
   perl: '5.008008'
   rlib: '0.02'
 resources:
   bugtracker: https://github.com/rocky/Perl-Devel-Trepan-Disassemble/issues
-  license: http://www.gnu.org/licenses/old-licenses/gpl-1.0.txt
+  license: http://opensource.org/licenses/gpl-license.php
   repository: http://github.com/rocky/Perl-Devel-Trepan-Disassemble
-version: v2.0.0
-x_serialization_backend: 'CPAN::Meta::YAML version 0.012'
+version: v2.0.1

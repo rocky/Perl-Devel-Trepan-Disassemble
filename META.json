@@ -4,7 +4,7 @@
       "Rocky Bernstein <rocky@cpan.org>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4206",
+   "generated_by" : "Module::Build version 0.4214",
    "license" : [
       "gpl_1"
    ],
@@ -26,7 +26,7 @@
          "requires" : {
             "B::Concise" : "0",
             "Devel::Callsite" : "0.08",
-            "Devel::Trepan" : "0.70",
+            "Devel::Trepan" : "0.71",
             "Getopt::Long" : "0",
             "perl" : "5.008008",
             "rlib" : "0.02"
@@ -47,7 +47,7 @@
       },
       "Devel::Trepan::Disassemble" : {
          "file" : "lib/Devel/Trepan/Disassemble.pm",
-         "version" : "v2.0.0"
+         "version" : "v2.0.1"
       }
    },
    "release_status" : "stable",
@@ -56,12 +56,11 @@
          "web" : "https://github.com/rocky/Perl-Devel-Trepan-Disassemble/issues"
       },
       "license" : [
-         "http://www.gnu.org/licenses/old-licenses/gpl-1.0.txt"
+         "http://opensource.org/licenses/gpl-license.php"
       ],
       "repository" : {
          "url" : "http://github.com/rocky/Perl-Devel-Trepan-Disassemble"
       }
    },
-   "version" : "v2.0.0",
-   "x_serialization_backend" : "JSON::PP version 2.27203"
+   "version" : "v2.0.1"
 }

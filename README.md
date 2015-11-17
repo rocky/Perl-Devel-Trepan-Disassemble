@@ -1,12 +1,11 @@
-Devel::Trepan::Disassemble -- Disassemble command for Devel::Trepan
-====================================================================
+[![Build Status](https://travis-ci.org/rocky/Perl-Devel-Trepan-Disassemble.png)](https://travis-ci.org/rocky/Perl-Devel-Trepan-Disassemble)
 
-SYNOPSIS
+Synopsis
 --------
 
 Adds a "disassemble" command to [`Devel::Trepan`](https://github.com/rocky/Perl-Devel-Trepan/wiki).
 
-INSTALLATION
+Installation
 ------------
 
 To install this Devel::Trepan, run the following commands:
@@ -16,7 +15,7 @@ To install this Devel::Trepan, run the following commands:
 	make test
 	[sudo] make install
 
-LICENSE AND COPYRIGHT
+License and Copyright
 ---------------------
 
 Copyright (C) 2015 Rocky Bernstein <rocky@cpan.org>
