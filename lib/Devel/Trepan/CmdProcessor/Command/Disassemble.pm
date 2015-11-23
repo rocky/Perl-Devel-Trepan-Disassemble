@@ -399,8 +399,13 @@ sub run($$)
     shift @args;
     my $proc = $self->{proc};
     $DEFAULT_OPTIONS->{highlight} = $proc->{settings}{highlight};
-    $DEFAULT_OPTIONS->{from} = 0;
-    $DEFAULT_OPTIONS->{to} = 100000;
+    if (scalar(@args)) {
+	$DEFAULT_OPTIONS->{from} = 0;
+	$DEFAULT_OPTIONS->{to} = 100000;
+    } else {
+	$DEFAULT_OPTIONS->{from} = $proc->{frame}{line};
+	$DEFAULT_OPTIONS->{to} = $DEFAULT_OPTIONS->{from} +$proc->{settings}{maxlist};
+    }
     my $options = parse_options($self, \@args);
     unless (scalar(@args)) {
 	if ($proc->funcname && $proc->funcname ne 'DB::DB') {
