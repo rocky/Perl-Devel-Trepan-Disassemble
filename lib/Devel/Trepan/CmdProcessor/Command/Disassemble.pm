@@ -79,7 +79,11 @@ our $HELP = <<'HELP';
 B<disassemble> [I<options>] [I<subroutine>|I<package-name> ...]
 
 options:
+
+    [-]-no-highlight
+    [-]-highight={plain|dark|light}
     -concise
+    -basic
     -terse
     -linenoise
     -debug
@@ -89,17 +93,45 @@ options:
     -loose
     -vt
     -ascii
-    -from I<line number>
-    -to  I<line_number>
+    -from *line-number*
+    -to *line-number*
 
-Use L<B::Concise> to disassemble a list of subroutines or a packages.  If
-no subroutine or package is specified, use the subroutine where the
-program is currently stopped.
+Disassembles the Perl interpreter OP tree using L<B::Concise>.
 
 Flags C<-from> and C<-to> respectively exclude lines less than or
-greater that the supplied line number. Other flags are are the
-corresponding I<B::Concise> flags and that should be consulted for
-their meaning.
+greater that the supplied line number.  If no C<-to> value is given
+and a subroutine or package is not given then the C<-to> value is
+taken from the "listsize" value as a count, and the C<-from> value is
+the current line.
+
+Use L<C<set max list>|Devel::Trepan::CmdProcessor::Set::Max::List> or
+L<C<show max list>|Devel::Trepan::CmdProcessor::Show::Max::List> to
+see or set the number of lines to list.
+
+C<-no-highlight> will turn off syntax highlighting. C<-highlight=dark> sets for a dark
+background, C<light> for a light background and C<plain> is the same as C<-no-highlight>.
+
+
+Other flags are are the corresponding I<B::Concise> flags and that
+should be consulted for their meaning.
+
+=head2 Examples:
+
+ disassemble       # disassemble the curren tline for listsize lines
+ dissasm           # default alias; same as above
+ disasm -from 15 -to 19  # disassmble lines 15-19
+ disasm main::fib  # disassemble the main::fib() subroutine
+ disasm fib.pl     # disassemble file fib.pl
+ disassm -debug -exec  # block style, rather than tree, like B::Debug
+
+
+=head2 See also:
+
+L<C<list>|Devel::Trepan::CmdProcessor::Command::List>, and
+L<C<deparse>|Devel::Trepan::CmdProcessor::Command::Deparse>, L<C<set
+highlight>|Devel::Trepan::CmdProcessor::Set::Highlight>, L<C<set max
+list>|Devel::Trepan::CmdProcessor::Set::Max::List>, and L<C<show max
+list>|Devel::Trepan::CmdProcessor::Show::Max::List>.
 
 =cut
 HELP
@@ -133,16 +165,17 @@ sub parse_options($$)
 	'-exec'       => sub { $opts->{order} = '-exec'; },
 	'-tree'       => sub { $opts->{order} = '-tree'; },
 
-	'-compact'    => sub { $opts->{tree_style} = '-compact'; },
-	'-loose'      => sub { $opts->{tree_style} = '-loose'; },
-	'-vt'         => sub { $opts->{tree_style} = '-vt'; },
-	'-ascii'      => sub { $opts->{tree_style} = '-ascii'; },
-	'-highlight'  => sub { $opts->{highlight} = 1; },
+	'-compact'      => sub { $opts->{tree_style} = '-compact'; },
+	'-loose'        => sub { $opts->{tree_style} = '-loose'; },
+	'-vt'           => sub { $opts->{tree_style} = '-vt'; },
+	'-ascii'        => sub { $opts->{tree_style} = '-ascii'; },
+	'-highlight=s'  => \$opts->{highlight},
 	'-no-highlight' => sub { $opts->{highlight} = 0; },
-	'from=i'     => \$opts->{from},
-	'to=i'       => \$opts->{to},
-	#'addr=s'     => \$opts->{addr},
+	'from=i'        => \$opts->{from},
+	'to=i'          => \$opts->{to},
+	#'addr=s'        => \$opts->{addr},
 	);
+    $opts->{highlight} = 0 if defined($opts->{highlight}) && $opts->{highlight} eq 'plain';
     $opts;
 }
 
@@ -303,7 +336,7 @@ sub markup_tree_terse($$$$$)
     my @lines = split /\n/, $lines;
     my $current_line = 0;
     my @newlines = ();
-    # use Enbugger 'trepan'; Enbugger->stop;
+    # use Enbugger; Enbugger->stop;
     my $addr = $proc->{frame}{addr};
     my $check_hex_str;
     if ($proc->{frame}{addr}) {
@@ -377,8 +410,6 @@ sub do_one($$$$)
     B::Concise::set_style_standard($options->{line_style});
     B::Concise::walk_output(\my $buf);
     $walker->();			# walks and renders into $buf;
-    my $highlight = $options->{highlight} && $proc->{settings}{highlight};
-    ## FIXME: syntax highlight the output.
     if ('terse' eq $options->{line_style}) {
 	$buf = markup_tree_terse($buf, $options->{highlight}, $proc,
 				 $options->{from}, $options->{to});
@@ -398,21 +429,28 @@ sub run($$)
     my @args = @$args;
     shift @args;
     my $proc = $self->{proc};
-    $DEFAULT_OPTIONS->{highlight} = $proc->{settings}{highlight};
-    if (scalar(@args)) {
-	$DEFAULT_OPTIONS->{from} = 0;
-	$DEFAULT_OPTIONS->{to} = 100000;
-    } else {
-	$DEFAULT_OPTIONS->{from} = $proc->{frame}{line};
-	$DEFAULT_OPTIONS->{to} = $DEFAULT_OPTIONS->{from} +$proc->{settings}{maxlist};
-    }
+    $DEFAULT_OPTIONS->{from} =  $DEFAULT_OPTIONS->{to} =
+	$DEFAULT_OPTIONS->{highlight} = undef;
     my $options = parse_options($self, \@args);
-    unless (scalar(@args)) {
+    $options->{highlight} = $proc->{settings}{highlight} unless
+	defined($options->{highlight});
+    $perl_formatter = Devel::Trepan::DB::Colors::setup($options->{highlight})
+	if $options->{highlight};
+
+    if (scalar(@args)) {
+	$options->{from} = 0 unless defined($options->{from});
+	$options->{to} = 100000 unless defined($options->{to});
+    } else {
+	$options->{from} = $proc->{frame}{line} unless defined($options->{from});
+	$options->{to} = $DEFAULT_OPTIONS->{from} + $proc->{settings}{maxlist}  unless
+	    defined($options->{to});
 	if ($proc->funcname && $proc->funcname ne 'DB::DB') {
 	    push @args, $proc->funcname;
 	} else {
 	    do_one($proc, "Package Main", $options, ['-main']);
 	}
+    }
+    unless (scalar(@args)) {
     }
 
     for my $disasm_unit (@args) {
@@ -450,7 +488,7 @@ unless (caller) {
     };
     $proc->{settings}{highlight} = 1;
     my $cmd = __PACKAGE__->new($proc);
-    $cmd->run([$NAME, '-terse', '--highlight']);
+    $cmd->run([$NAME, '-terse', '--highlight=dark']);
     print '=' x 50, "\n";
     # print '=' x 50, "\n";
     # $cmd->run([$NAME, '-basic', '--highlight']);
