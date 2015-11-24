@@ -78,23 +78,23 @@ our $HELP = <<'HELP';
 
 B<disassemble> [I<options>] [I<subroutine>|I<package-name> ...]
 
-options:
+I<options>:
 
     [-]-no-highlight
     [-]-highight={plain|dark|light}
-    -concise
-    -basic
-    -terse
-    -linenoise
-    -debug
-    -compact
-    -exec
-    -tree
-    -loose
-    -vt
-    -ascii
-    -from *line-number*
-    -to *line-number*
+    [-]-concise
+    [-]-basic
+    [-]-terse
+    [-]-linenoise
+    [-]-debug
+    [-]-compact
+    [-]-exec
+    [-]-tree
+    [-]-loose
+    [-]-vt
+    [-]-ascii
+    [-]-from <line-number>
+    [-]-to <line-number>
 
 Disassembles the Perl interpreter OP tree using L<B::Concise>.
 

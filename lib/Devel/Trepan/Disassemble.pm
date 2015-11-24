@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # Copyright (C) 2012-2015 Rocky Bernstein <rocky@cpan.org>
 package Devel::Trepan::Disassemble;
-our $VERSION='2.0.1';
+our $VERSION='2.0.2';
 "All of the real action is in Devel::Trepan::CmdProcessor::Command::Disassemble.pm";
 __END__
 
@@ -33,27 +33,40 @@ B<disassemble> [I<options>] [I<subroutine>|I<package-name> ...]
 
 I<options>:
 
-    -concise
-    -terse
-    -linenoise
-    -debug
-    -compact
-    -exec
-    -tree
-    -loose
-    -vt
-    -ascii
-    -from <line-number>
-    -to <line-number>
+    [-]-no-highlight
+    [-]-highight={plain|dark|light}
+    [-]-concise
+    [-]-basic
+    [-]-terse
+    [-]-linenoise
+    [-]-debug
+    [-]-compact
+    [-]-exec
+    [-]-tree
+    [-]-loose
+    [-]-vt
+    [-]-ascii
+    [-]-from <line-number>
+    [-]-to <line-number>
 
-Use L<B::Concise> to disassemble a list of subroutines or a packages.  If
-no subroutine or package is specified, use the subroutine where the
-program is currently stopped.
+Disassembles the Perl interpreter OP tree using L<B::Concise>.
 
 Flags C<-from> and C<-to> respectively exclude lines less than or
-greater that the supplied line number. Other flags are are the
-corresponding I<B::Concise> flags and that should be consulted for
-their meaning.
+greater that the supplied line number.  If no C<-to> value is given
+and a subroutine or package is not given then the C<-to> value is
+taken from the "listsize" value as a count, and the C<-from> value is
+the current line.
+
+Use L<C<set max list>|Devel::Trepan::CmdProcessor::Set::Max::List> or
+L<C<show max list>|Devel::Trepan::CmdProcessor::Show::Max::List> to
+see or set the number of lines to list.
+
+C<-no-highlight> will turn off syntax highlighting. C<-highlight=dark> sets for a dark
+background, C<light> for a light background and C<plain> is the same as C<-no-highlight>.
+
+
+Other flags are are the corresponding I<B::Concise> flags and that
+should be consulted for their meaning.
 
 =head1 EXAMPLES
 
@@ -124,13 +137,21 @@ Finally, you can limit the range of output using C<-from> and/or C<-to>:
    (trepanpl): disasm -from 227 -to 236 -basic File::Basename::basename
 
 
+=head1 See also:
+
+L<C<list>|Devel::Trepan::CmdProcessor::Command::List>, and
+L<C<deparse>|Devel::Trepan::CmdProcessor::Command::Deparse>, L<C<set
+highlight>|Devel::Trepan::CmdProcessor::Set::Highlight>, L<C<set max
+list>|Devel::Trepan::CmdProcessor::Set::Max::List>, and L<C<show max
+list>|Devel::Trepan::CmdProcessor::Show::Max::List>.
+
 =head1 AUTHORS
 
 Rocky Bernstein
 
 =head1 COPYRIGHT
 
-Copyright (C) 2012 Rocky Bernstein <rocky@cpan.org>
+Copyright (C) 2012, 2015 Rocky Bernstein <rocky@cpan.org>
 
 This program is distributed WITHOUT ANY WARRANTY, including but not
 limited to the implied warranties of merchantability or fitness for a
