@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2011-2012, 2015 Rocky Bernstein <rocky@cpan.org>
+# Copyright (C) 2011-2012, 2015, 2018 Rocky Bernstein <rocky@cpan.org>
 use warnings; no warnings 'redefine';
 
 use rlib '../../../..';
@@ -200,6 +200,7 @@ sub markup_basic($$$$$)
 	$check_hex_str = sprintf "0x%x", $proc->{frame}{addr};
     }
     my $filename = $proc->{frame}{file};
+    my $frame_index = $proc->{frame_index};
     foreach (@lines) {
 	my $marker = '    ';
 	if (/^#(\s+)(\d+):(\s+)(.+)$/) {
@@ -246,7 +247,7 @@ sub markup_basic($$$$$)
 	    my ($op, $hex_str) = ($1, $2);
 	    # print "FOUND $op, $hex_str\n";
 	    if ($check_hex_str && $check_hex_str eq $hex_str) {
-		$marker = '=>  ';
+    		$marker = $frame_index ? '-> ' : '=>  ';
 		$marker = $proc->bolden($marker) if $highlight;
 	    }
 	    if ($highlight) {
@@ -276,6 +277,7 @@ sub markup_tree($$$$$)
     if ($proc->{frame}{addr}) {
 	$check_hex_str = sprintf "0x%x", $proc->{frame}{addr};
     }
+    my $frame_index = $proc->{frame_index};
     foreach (@lines) {
 	my $marker = '    ';
 	if (/^(.*)\|-#(\s+)(\d+):(.+)$/) {
@@ -315,7 +317,7 @@ sub markup_tree($$$$$)
 	} elsif (/^((?:[ |`])*-?)(0x[0-9a-f]+)(.*)$/) {
     	    my ($space, $hex_str, $rest) = ($1, $2, $3);
 	    if ($check_hex_str && /$check_hex_str/) {
-		$marker = '=>  ';
+    		$marker = $frame_index ? '-> ' : '=>  ';
 		$marker = $proc->bolden($marker) if $highlight;
 	    }
 	    if ($highlight) {
@@ -342,6 +344,7 @@ sub markup_tree_terse($$$$$)
     if ($proc->{frame}{addr}) {
 	$check_hex_str = sprintf "0x%x", $proc->{frame}{addr};
     }
+    my $frame_index = $proc->{frame_index};
     my $filename = $proc->{frame}{file};
     foreach (@lines) {
     	my $marker = '    ';
@@ -382,7 +385,7 @@ sub markup_tree_terse($$$$$)
 	} elsif (/^(\s*)([A-Z]+) \((0x[0-9a-f]+)\) (\w+) (.*)$/) {
     	    my ($space, $op, $hex_str, $name, $rest) = ($1, $2, $3, $4, $5);
     	    if ($check_hex_str && $check_hex_str eq $hex_str) {
-    		$marker = '=>  ';
+    		$marker = $frame_index ? '-> ' : '=>  ';
     		$marker = $proc->bolden($marker) if $highlight;
     	    }
     	    if ($highlight) {
@@ -436,15 +439,19 @@ sub run($$)
 	defined($options->{highlight});
     $perl_formatter = Devel::Trepan::DB::Colors::setup($options->{highlight})
 	if $options->{highlight};
+    my $frame_index = $proc->{frame_index};
+
 
     if (scalar(@args)) {
 	$options->{from} = 0 unless defined($options->{from});
 	$options->{to} = 100000 unless defined($options->{to});
     } else {
+	my $last_frame = $proc->{stack_size} - 1;
+	my $is_last_frame = ($frame_index == $last_frame);
 	$options->{from} = $proc->{frame}{line} unless defined($options->{from});
 	$options->{to} = $DEFAULT_OPTIONS->{from} + $proc->{settings}{maxlist}  unless
 	    defined($options->{to});
-	if ($proc->funcname && $proc->funcname ne 'DB::DB') {
+	if (!$is_last_frame && $proc->funcname && $proc->funcname ne 'DB::DB') {
 	    push @args, $proc->funcname;
 	} else {
 	    do_one($proc, "Package Main", $options, ['-main']);
